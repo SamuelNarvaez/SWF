@@ -27,6 +27,12 @@ class Trimesh():
     level : int
       Level of subdivision of the mesh
     """
+    if vertices is not None:
+            # (n, 3) float, set of vertices
+            self.vertices = vertices
+    if faces is not None:
+            # (m, 3) int of triangle faces, references self.vertices
+            self.faces =
 
 
 
