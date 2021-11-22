@@ -55,16 +55,18 @@ class Trimesh():
             face_index = np.arange(len(self.faces))
         else:
             face_index = np.asanyarray(face_index)
-
+        print(f'face_index: {face_index}')
         # the (c, 3) int array of vertex indices
         faces_subset = self.faces[face_index]
-
+        print(f'faces_subset: {faces_subset}')
         # find the unique edges of our faces subset
         edges = np.sort(faces_to_edges(faces_subset), axis=1)
+        print(f'edges: {edges}')
         _, unique, inverse = np.unique(
             edges,
             return_index=True,
-            return_inverse=True)
+            return_inverse=True,axis=0)
+        print(f'uniqe: {unique}')
         # then only produce one midpoint per unique edge
         mid = self.vertices[edges[unique]].mean(axis=1)
         mid_idx = inverse.reshape((-1, 3)) + len(self.vertices)
@@ -92,7 +94,7 @@ class Trimesh():
         return Trimesh(new_vertices, new_faces, self.level + 1)
 
 if __name__ == "__main__":
-    mesh0 = Trimesh(np.array([[0,0,0],[1,0,0],[0,1,0]]),np.array([[0,1,2]]))
+    mesh0 = Trimesh(np.array([[0,0,0],[1,0,0],[0,1,0],[1,1,0]]),np.array([[0,1,2],[1,2,3]]))
     print(mesh0)
     mesh1 = mesh0.subdivide()
     print(mesh1)
