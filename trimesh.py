@@ -1,41 +1,37 @@
 import numpy as np
 
+def faces_to_edges(faces, return_index=False):
+    """
+    Given a list of faces (n,3), return a list of edges (n*3,2)
+    Parameters
+    -----------
+    faces : (n, 3) int
+      Vertex indices representing faces
+    Returns
+    -----------
+    edges : (n*3, 2) int
+      Vertex indices representing edges
+    """
+    faces = np.asanyarray(faces)
+    # each face has three edges
+    edges = faces[:, [0, 1, 1, 2, 2, 0]].reshape((-1, 2))
+    return edges
+
 class Trimesh():
-    def __init__(vertices=None,faces=None,level=0):
-    """
-    vertices : (n, 3) float
-       Array of vertex locations
-    faces : (m, 3) int
-      Indexes of vertices which make up triangular faces
-    level : int
-      Level of subdivision of the mesh
-    """
-    self.level = level
-    if vertices is not None:
-            # (n, 3) float, set of vertices
-            self.vertices = vertices
-    if faces is not None:
-            # (m, 3) int of triangle faces, references self.vertices
-            self.faces = faces
+    def __init__(self,vertices=None,faces=None,level=0):
+        """
+        vertices : (n, 3) float
+           Array of vertex locations
+        faces : (m, 3) int
+          Indexes of vertices which make up triangular faces
+        level : int
+          Level of subdivision of the mesh
+        """
+        self.level = level
+        self.vertices = vertices
+        self.faces = faces
     def __repr__(self):
         return f"mesh level {self.level}" + "\nvertices: \n" + np.array_str(self.vertices) + "\nfaces: \n" + np.array_str(self.faces)
-
-    def faces_to_edges(faces, return_index=False):
-        """
-        Given a list of faces (n,3), return a list of edges (n*3,2)
-        Parameters
-        -----------
-        faces : (n, 3) int
-          Vertex indices representing faces
-        Returns
-        -----------
-        edges : (n*3, 2) int
-          Vertex indices representing edges
-        """
-        faces = np.asanyarray(faces)
-        # each face has three edges
-        edges = faces[:, [0, 1, 1, 2, 2, 0]].reshape((-1, 2))
-        return edges
 
     def subdivide(self, face_index=None):
         """
