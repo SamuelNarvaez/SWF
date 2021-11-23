@@ -55,14 +55,17 @@ class Trimesh():
             face_index = np.arange(len(self.faces))
         else:
             face_index = np.asanyarray(face_index)
+            
         # the (c, 3) int array of vertex indices
         faces_subset = self.faces[face_index]
-        # find the unique edges of our faces subset, sort them so the lower index vertex comes first
+        
+        # find the unique edges of our faces subset
         edges = np.sort(faces_to_edges(faces_subset), axis=1)
         _, unique, inverse = np.unique(
             edges,
             return_index=True,
             return_inverse=True,axis=0)
+        
         # then only produce one midpoint per unique edge
         mid = self.vertices[edges[unique]].mean(axis=1)
         mid_idx = inverse.reshape((-1, 3)) + len(self.vertices)
@@ -84,6 +87,12 @@ class Trimesh():
         new_faces = np.vstack((self.faces, f[len(face_index):]))
         # replace the old face with a smaller face
         new_faces[face_index] = f[:len(face_index)]
+        
+        ###
+        ### HERE THE LOOP WEIGHTING MASKS NEED TO BE APPLIED SO THAT THE COORDINATES FOR ALL VERTICES ARE RECOMPUTED
+        ### THIS WILL LEAD OUR MESH TO GET SMOOTHER AND APPROACH C2 CONTINUITY OVER CONSECUTIVE SUBDIVISIONS
+        ### FOR NOW, NEW VERTICES ARE LEFT IN THE SAME LINE AS THEIR SOURCES
+        ###
 
         new_vertices = np.vstack((self.vertices, mid))
 
