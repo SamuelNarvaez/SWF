@@ -55,17 +55,19 @@ class Trimesh():
             face_index = np.arange(len(self.faces))
         else:
             face_index = np.asanyarray(face_index)
-            
+
         # the (c, 3) int array of vertex indices
         faces_subset = self.faces[face_index]
-        
+
         # find the unique edges of our faces subset
         edges = np.sort(faces_to_edges(faces_subset), axis=1)
-        _, unique, inverse = np.unique(
+        _, unique, inverse, counts = np.unique(
             edges,
             return_index=True,
-            return_inverse=True,axis=0)
-        
+            return_inverse=True,
+            return_counts=True,
+            axis=0)
+        print(f'counts: {counts}')
         # then only produce one midpoint per unique edge
         mid = self.vertices[edges[unique]].mean(axis=1)
         mid_idx = inverse.reshape((-1, 3)) + len(self.vertices)
@@ -87,12 +89,37 @@ class Trimesh():
         new_faces = np.vstack((self.faces, f[len(face_index):]))
         # replace the old face with a smaller face
         new_faces[face_index] = f[:len(face_index)]
-        
+
         ###
         ### HERE THE LOOP WEIGHTING MASKS NEED TO BE APPLIED SO THAT THE COORDINATES FOR ALL VERTICES ARE RECOMPUTED
         ### THIS WILL LEAD OUR MESH TO GET SMOOTHER AND APPROACH C2 CONTINUITY OVER CONSECUTIVE SUBDIVISIONS
         ### FOR NOW, NEW VERTICES ARE LEFT IN THE SAME LINE AS THEIR SOURCES
         ###
+'''
+        #for odd (new) vertices:
+        for i in range(len(unique)):
+            if counts[i] == 1:
+                #then edge corresponds to crease or boundary, the geometric mean that was already computed will do.
+                continue
+            else:
+                #edge is an interior
+                interior = edges[unique[i]]
+                #find which two faces have interior edge
+                #find the third vertex of both faces
+                #compute the position of the new vertex as 3/8 the position of the endpoints of interior and 1/8 the two third vertices
+                #assign the computed position in the mid array
+
+        #for even (old) vertices:
+            #if v is an interior:
+                #find all the adjecent faces
+                #weight all the unique points in the faces by beta, weight v's current position by 1-k*beta and sum
+            #if v is an exterior:
+                #weight v's two neighbors by 1/8 and v by 3/4 and sum
+
+
+'''
+
+
 
         new_vertices = np.vstack((self.vertices, mid))
 
@@ -102,6 +129,3 @@ if __name__ == "__main__":
     mesh0 = Trimesh(np.array([[0,0,0],[1,0,0],[0,1,0],[1,1,0]]),np.array([[0,1,2],[1,3,2]]))
     print(mesh0)
     mesh1 = mesh0.subdivide()
-    print(mesh1)
-    mesh2 = mesh1.subdivide()
-    print(mesh2)
