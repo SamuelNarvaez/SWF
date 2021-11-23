@@ -94,29 +94,29 @@ class Trimesh():
         ### THIS WILL LEAD OUR MESH TO GET SMOOTHER AND APPROACH C2 CONTINUITY OVER CONSECUTIVE SUBDIVISIONS
         ### FOR NOW, NEW VERTICES ARE LEFT IN THE SAME LINE AS THEIR SOURCES
         ###
-'''
-        #for odd (new) vertices:
-        for i in range(len(unique)):
-            if counts[i] == 1:
-                #then edge corresponds to crease or boundary, the geometric mean that was already computed will do.
-                continue
-            else:
-                #edge is an interior
-                interior = edges[unique[i]]
-                #find which two faces have interior edge
-                #find the third vertex of both faces
-                #compute the position of the new vertex as 3/8 the position of the endpoints of interior and 1/8 the two third vertices
-                #assign the computed position in the mid array
+        '''
+                #for odd (new) vertices:
+                for i in range(len(unique)):
+                    if counts[i] == 1:
+                        #then edge corresponds to crease or boundary, the geometric mean that was already computed will do.
+                        continue
+                    else:
+                        #edge is an interior
+                        interior = edges[unique[i]]
+                        #find which two faces have interior edge
+                        #find the third vertex of both faces
+                        #compute the position of the new vertex as 3/8 the position of the endpoints of interior and 1/8 the two third vertices
+                        #assign the computed position in the mid array
 
-        #for even (old) vertices:
-            #if v is an interior:
-                #find all the adjecent faces
-                #weight all the unique points in the faces by beta, weight v's current position by 1-k*beta and sum
-            #if v is an exterior:
-                #weight v's two neighbors by 1/8 and v by 3/4 and sum
+                #for even (old) vertices:
+                    #if v is an interior:
+                        #find all the adjecent faces
+                        #weight all the unique points in the faces by beta, weight v's current position by 1-k*beta and sum
+                    #if v is an exterior:
+                        #weight v's two neighbors by 1/8 and v by 3/4 and sum
 
 
-'''
+        '''
 
 
 
