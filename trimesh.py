@@ -67,7 +67,6 @@ class Trimesh():
             return_inverse=True,
             return_counts=True,
             axis=0)
-        print(f'counts: {counts}')
         # then only produce one midpoint per unique edge
         mid = self.vertices[edges[unique]].mean(axis=1)
         mid_idx = inverse.reshape((-1, 3)) + len(self.vertices)
