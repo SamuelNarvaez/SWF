@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.preprocessing import StandardScaler
 
 def faces_to_edges(faces, return_index=False):
     """
@@ -28,12 +29,13 @@ class Trimesh():
           Level of subdivision of the mesh
         """
         self.level = level
-        self.vertices = vertices
+        if vertices is not None:
+            self.vertices = StandardScaler(with_std=False).fit_transform(vertices)
         self.faces = faces
     def __repr__(self):
         return f"mesh level {self.level}" + "\nvertices: \n" + np.array_str(self.vertices) + "\nfaces: \n" + np.array_str(self.faces)
 
-    def subdivide(self, face_index=None):
+    def subdivide(self, project_to_sphere = False, face_index=None):
         """
         Subdivide a mesh into smaller triangles.
         Note that if `face_index` is passed, only those
@@ -88,6 +90,12 @@ class Trimesh():
         new_faces = np.vstack((self.faces, f[len(face_index):]))
         # replace the old face with a smaller face
         new_faces[face_index] = f[:len(face_index)]
+        
+        #turn new midpoints into unit vectors w.r.t. the origin
+        if project_to_sphere:
+            for i in range(len(mid)):
+                mid[i] = mid[i]/np.linalg.norm(mid[i])
+            
 
         ###
         ### HERE THE LOOP WEIGHTING MASKS NEED TO BE APPLIED SO THAT THE COORDINATES FOR ALL VERTICES ARE RECOMPUTED
