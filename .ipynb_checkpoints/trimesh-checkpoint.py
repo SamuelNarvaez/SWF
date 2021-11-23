@@ -31,6 +31,9 @@ class Trimesh():
         self.level = level
         if vertices is not None:
             self.vertices = StandardScaler(with_std=False).fit_transform(vertices)
+        if self.level==0:
+            for i in range(len(self.vertices)):
+                self.vertices[i] = self.vertices[i]/np.linalg.norm(self.vertices[i])
         self.faces = faces
     def __repr__(self):
         return f"mesh level {self.level}" + "\nvertices: \n" + np.array_str(self.vertices) + "\nfaces: \n" + np.array_str(self.faces)
