@@ -119,11 +119,13 @@ class Trimesh():
 
         new_vertices = np.vstack((self.vertices, mid))
         
-        new_filter = np.vstack((self.filter,np.zeros((mid.shape[0],self.filter.shape[1]))))
+        P = np.vstack((self.filter,np.zeros((mid.shape[0],self.filter.shape[1]))))
         
-        new_weights = new_filter @ self.weights
+        new_weights = P @ self.weights
         
-        new_filter = np.hstack((new_filter,np.zeros((new_filter.shape[0],new_weights.shape[0]-new_filter.shape[1]))))
+        Q = np.zeros((P.shape[0],new_weights.shape[0]-P.shape[1]))
+        
+        new_filter = np.hstack((P,Q))
 
         return Trimesh(new_vertices, new_faces, new_weights, new_filter, self.level + 1)
 
