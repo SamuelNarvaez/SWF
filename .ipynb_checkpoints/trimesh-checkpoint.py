@@ -41,21 +41,29 @@ class Trimesh():
                 self.vertices[i] = self.vertices[i]/np.linalg.norm(self.vertices[i])
         self.faces = faces
         self.weights = weights.reshape((-1,1))
-        if filters is not None:
-            self.filter = filters
+        
+        if filters is None:
+            # This assures a consistent shape for the (P,Q,A,B) Tuple. At the coarsest level, only P is defined. 
+            
+            self.identity = np.identity(self.vertices.shape[0])
+            self.filters = (self.identity,)
+        
         else:
-            self.filter = np.identity(self.vertices.shape[0])
+            #This lets us iteratively construct the filters for each level
+            
+            self.identity = None
+            self.filters = filters
 
     def __repr__(self):
         return f"mesh level {self.level}" + "\nvertices: \n" + np.array_str(self.vertices) + "\nfaces: \n" + np.array_str(self.faces) + "\nweights: \n" + np.array_str(self.weights) 
 
-    def liftingScheme(P,Q,A,B):
-        return None
+    def liftingScheme(self,P,Q,A,B):
+        return P,Q,A,B
 
-    def modliftingScheme(P,Q,A,B):
-        return None
+    def modliftingScheme(self,P,Q,A,B):
+        return P,Q,A,B
 
-    def subdivide(self, project_to_sphere = False, face_index=None):
+    def subdivide(self, project_to_sphere = False, modified = False, face_index=None):
         """
         Subdivide a mesh into smaller triangles.
         Note that if `face_index` is passed, only those
@@ -119,15 +127,34 @@ class Trimesh():
 
         new_vertices = np.vstack((self.vertices, mid))
         
-        P = np.vstack((self.filter,np.zeros((mid.shape[0],self.filter.shape[1]))))
+        if self.identity is not None:
+            #if we're at the coarsest level 0
+            
+            P = np.vstack((self.identity,np.zeros((mid.shape[0],self.identity.shape[1]))))
         
-        Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1]))
+            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1]))
+        
+            A = P.T
+        
+            B = Q.T
+            
+        else:
+            (P,Q,A,B) = self.filters
+
+            P = np.vstack((np.hstack((P,Q)),np.zeros((mid.shape[0],np.hstack((P,Q)).shape[1]))))
+
+            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1])) #This could be WRONG
+        
+        if modified:
+            P,Q,A,B = self.modliftingScheme(P,Q,A,B)
+        else:
+            P,Q,A,B = self.liftingScheme(P,Q,A,B)
         
         new_weights = P @ self.weights
         
-        new_filter = np.hstack((P,Q))
+        new_filters = (P,Q,A,B)
 
-        return Trimesh(new_vertices, new_faces, new_weights, new_filter, self.level + 1)
+        return Trimesh(new_vertices, new_faces, new_weights, new_filters, self.level + 1)
 
 if __name__ == "__main__":
     mesh0 = Trimesh(np.array([[0,0,0],[1,0,0],[0,1,0],[1,1,0]]),np.array([[0,1,2],[1,3,2]]))
