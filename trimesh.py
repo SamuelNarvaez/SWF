@@ -49,10 +49,10 @@ class Trimesh():
     def __repr__(self):
         return f"mesh level {self.level}" + "\nvertices: \n" + np.array_str(self.vertices) + "\nfaces: \n" + np.array_str(self.faces) + "\nweights: \n" + np.array_str(self.weights) 
 
-    def liftingScheme():
+    def liftingScheme(P,Q,A,B):
         return None
 
-    def modliftingScheme():
+    def modliftingScheme(P,Q,A,B):
         return None
 
     def subdivide(self, project_to_sphere = False, face_index=None):
@@ -121,9 +121,9 @@ class Trimesh():
         
         P = np.vstack((self.filter,np.zeros((mid.shape[0],self.filter.shape[1]))))
         
-        new_weights = P @ self.weights
+        Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1]))
         
-        Q = np.zeros((P.shape[0],new_weights.shape[0]-P.shape[1]))
+        new_weights = P @ self.weights
         
         new_filter = np.hstack((P,Q))
 
