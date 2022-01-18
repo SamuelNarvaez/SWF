@@ -144,6 +144,10 @@ class Trimesh():
             P = np.vstack((np.hstack((P,Q)),np.zeros((mid.shape[0],np.hstack((P,Q)).shape[1]))))
 
             Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1])) #This could be WRONG
+            
+            A = P.T
+        
+            B = Q.T
         
         if modified:
             P,Q,A,B = self.modliftingScheme(P,Q,A,B)
