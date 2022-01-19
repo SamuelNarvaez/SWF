@@ -40,14 +40,22 @@ class Trimesh():
             for i in range(len(self.vertices)):
                 self.vertices[i] = self.vertices[i]/np.linalg.norm(self.vertices[i])
         self.faces = faces
-        self.weights = weights.reshape((-1,1))
+        
+        if weights is None:
+            self.weights = np.ones((self.vertices.shape[0],1))
+        else:
+            self.weights = weights.reshape((-1,1))
         
         if filters is None:
             # This assures a consistent shape for the (P,Q,A,B) Tuple. At the coarsest level, only P is defined. 
             
             self.identity = np.identity(self.vertices.shape[0])
             self.filters = (self.identity,)
-        
+            
+        elif len(filters)==1:
+            self.identity = filters[0]
+            self.filters = (self.identity,)
+            
         else:
             #This lets us iteratively construct the filters for each level
             
