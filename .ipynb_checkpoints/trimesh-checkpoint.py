@@ -1,6 +1,24 @@
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 
+class PrintArray:
+
+    def __init__(self, **kwargs):
+        self._kwargs = kwargs
+
+    def __repr__(self):
+        rpr = ('PrintArray(' +
+               ', '.join([f'{name}={value}' for name, value in self._kwargs.items()]) +
+               ')')
+        return rpr
+
+    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
+        if ufunc != np.floor_divide:
+            return NotImplemented
+        a = inputs[0]
+        with np.printoptions(**self._kwargs):
+            print(a)
+            
 def faces_to_edges(faces, return_index=False):
     """
     Given a list of faces (n,3), return a list of edges (n*3,2)
@@ -113,6 +131,8 @@ class Trimesh():
         ----------
         New subdivided trimesh object
         """
+        pa = PrintArray(precision=2, linewidth=150, suppress=True)
+        
         if face_index is None:
             face_index = np.arange(len(self.faces))
         else:
@@ -169,24 +189,54 @@ class Trimesh():
         
             B = Q.T
             
+            '''
+            print("initial:")
+            P//pa
+            Q//pa
+            A//pa
+            B//pa
+            '''
         else:
             (P,Q,A,B) = self.filters
             
-            PQ = np.hstack((P,Q))
-            AB = np.vstack((A,B))
+            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1])) #zero out the lifted Q from previous level to start trivial
+            
+            PQ = np.hstack((P,Q)) #using zeroed-Q
 
             P = np.vstack((PQ,np.zeros((mid.shape[0],PQ.shape[1]))))
 
-            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1])) #This could be WRONG
+            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1])) 
             
-            A = np.hstack((AB,np.zeros((AB.shape[0],mid.shape[0]))))
+            A = P.T
         
             B = Q.T
-        
+            
+            '''
+            print("initial:")
+            P//pa
+            Q//pa
+            A//pa
+            B//pa
+            '''
+            
         if modified:
             P,Q,A,B = self.modliftingScheme(P,Q,A,B)
+            '''
+            print("lifted:")
+            P//pa
+            Q//pa
+            A//pa
+            B//pa
+            '''
         else:
             P,Q,A,B = self.liftingScheme(P,Q,A,B)
+            '''
+            print("lifted:")
+            P//pa
+            Q//pa
+            A//pa
+            B//pa
+            '''
         
         new_weights = P @ self.weights
         
