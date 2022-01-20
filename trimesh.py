@@ -65,11 +65,34 @@ class Trimesh():
     def __repr__(self):
         return f"mesh level {self.level}" + "\nvertices: \n" + np.array_str(self.vertices) + "\nfaces: \n" + np.array_str(self.faces) + "\nweights: \n" + np.array_str(self.weights) 
 
-    def liftingScheme(self,P,Q,A,B):
+    def liftingScheme(self,P0,Q0,A0,B0):
+        
+        S = np.random.rand(Q0.shape[1],P0.shape[1]) #mxn matrix
+        T = np.random.rand(P0.shape[1],Q0.shape[1]) #nxm matrix
+        
+        Im = np.identity(S.shape[0]) #mxm identity matrix
+        In = np.identity(T.shape[0]) #nxn identity matrix
+        
+        P = P0 + Q0@S
+        Q = -P0 @ T + Q0 @ (Im - S@T)
+        A = (In - T@S)@A0 + T@B0
+        B = B0-S@A0
+        
         return P,Q,A,B
 
-    def modliftingScheme(self,P,Q,A,B):
+    def modliftingScheme(self,P0,Q0,A0,B0):
+        '''
+        S` = None
+        T` = None
+        
+        P = None
+        Q = None
+        A = A0 + T`@ B0
+        B = None
+        
         return P,Q,A,B
+        '''
+        return P0,Q0,A0,B0
 
     def subdivide(self, project_to_sphere = False, modified = False, face_index=None):
         """
