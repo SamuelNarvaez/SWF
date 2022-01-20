@@ -171,12 +171,15 @@ class Trimesh():
             
         else:
             (P,Q,A,B) = self.filters
+            
+            PQ = np.hstack((P,Q))
+            AB = np.vstack((A,B))
 
-            P = np.vstack((np.hstack((P,Q)),np.zeros((mid.shape[0],np.hstack((P,Q)).shape[1]))))
+            P = np.vstack((PQ,np.zeros((mid.shape[0],PQ.shape[1]))))
 
             Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1])) #This could be WRONG
             
-            A = P.T
+            A = np.hstack((AB,np.zeros((AB.shape[0],mid.shape[0]))))
         
             B = Q.T
         
