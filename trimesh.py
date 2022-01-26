@@ -81,7 +81,7 @@ class Trimesh():
             self.filters = filters
 
     def __repr__(self):
-        return f"mesh level {self.level}" + "\nvertices: \n" + np.array_str(self.vertices) + "\nfaces: \n" + np.array_str(self.faces) + "\nweights: \n" + np.array_str(self.weights) 
+        return f"mesh level {self.level}" + "\nnum vertices: \n" + str(self.vertices.shape[0]) + "\nnum faces: \n" + str(self.faces.shape[0]) + "\nweights: \n" + np.array_str(self.weights) 
 
     def liftingScheme(self,P0,Q0,A0,B0):
         
