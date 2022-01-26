@@ -1,1 +1,1 @@
-# LoopSubdivision
+# Spherical Wavelet Format
