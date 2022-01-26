@@ -68,6 +68,8 @@ class Trimesh():
             # This assures a consistent shape for the (P,Q,A,B) Tuple. At the coarsest level, only P is defined. 
             
             self.identity = np.identity(self.vertices.shape[0])
+        
+            
             self.filters = (self.identity,)
             
         elif len(filters)==1:
