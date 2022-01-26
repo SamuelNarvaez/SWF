@@ -103,10 +103,13 @@ class Trimesh():
         S_ = np.random.rand(Q0.shape[1],P0.shape[1]) #mxn matrix
         T_ = np.random.rand(P0.shape[1],Q0.shape[1]) #nxm matrix
         
-        P = P0 + Q0 @ S_
+        Im = np.identity(S_.shape[0]) #mxm identity matrix
+        In = np.identity(T_.shape[0]) #nxn identity matrix
+        
+        P = -Q0 @ S_ - P0 @ (In - T_@S_)
         Q = Q0 - P0 @ T_
         A = A0 + T_ @ B0
-        B = B0 - S_ @ A0
+        B = (Im - S_@T_)@B0 - S_@A0
         
         return P,Q,A,B
 
@@ -181,60 +184,32 @@ class Trimesh():
             
             P = np.vstack((self.identity,np.zeros((mid.shape[0],self.identity.shape[1]))))
         
-            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1]))
+            Q = np.vstack((np.zeros((P.shape[1],P.shape[0]-P.shape[1])),np.identity(P.shape[0]-P.shape[1])))
         
             A = P.T
         
             B = Q.T
             
-            '''
-            print("initial:")
-            P//pa
-            Q//pa
-            A//pa
-            B//pa
-            '''
         else:
             (P,Q,A,B) = self.filters
             
-            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1])) #zero out the lifted Q from previous level to start trivial
+            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1]))  #zero out the lifted Q from previous level to start trivial
             
-            PQ = np.hstack((P,Q)) #using zeroed-Q
+            PQ = np.hstack((np.vstack((np.identity(P.shape[1]),np.zeros((P.shape[0]-P.shape[1],P.shape[1])))),Q)) #using zeroed-Q
 
-            P = np.vstack((PQ,np.zeros((mid.shape[0],PQ.shape[1]))))
+            P = np.vstack((np.identity(PQ.shape[1]),np.zeros((mid.shape[0],PQ.shape[1]))))
 
-            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1])) 
+            Q = np.vstack((np.zeros((P.shape[1],P.shape[0]-P.shape[1])),np.identity(P.shape[0]-P.shape[1])))
             
             A = P.T
         
             B = Q.T
             
-            '''
-            print("initial:")
-            P//pa
-            Q//pa
-            A//pa
-            B//pa
-            '''
-            
         if modified:
             P,Q,A,B = self.modliftingScheme(P,Q,A,B)
-            '''
-            print("lifted:")
-            P//pa
-            Q//pa
-            A//pa
-            B//pa
-            '''
+            
         else:
             P,Q,A,B = self.liftingScheme(P,Q,A,B)
-            '''
-            print("lifted:")
-            P//pa
-            Q//pa
-            A//pa
-            B//pa
-            '''
         
         new_weights = P @ self.weights
         
