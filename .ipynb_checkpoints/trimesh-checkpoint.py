@@ -193,9 +193,7 @@ class Trimesh():
         else:
             (P,Q,A,B) = self.filters
             
-            Q = np.zeros((P.shape[0],P.shape[0]-P.shape[1]))  #zero out the lifted Q from previous level to start trivial
-            
-            PQ = np.hstack((np.vstack((np.identity(P.shape[1]),np.zeros((P.shape[0]-P.shape[1],P.shape[1])))),Q)) #using zeroed-Q
+            PQ = np.hstack((P,Q)) #this is a throwaway matrix, but its dimension simplifies the following expression
 
             P = np.vstack((np.identity(PQ.shape[1]),np.zeros((mid.shape[0],PQ.shape[1]))))
 
