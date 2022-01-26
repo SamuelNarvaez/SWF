@@ -70,11 +70,11 @@ class Trimesh():
             self.identity = np.identity(self.vertices.shape[0])
         
             
-            self.filters = (self.identity,)
+            self.filters = (self.identity,None,None,None)
             
         elif len(filters)==1:
             self.identity = filters[0]
-            self.filters = (self.identity,)
+            self.filters = (self.identity,None,None,None)
             
         else:
             #This lets us iteratively construct the filters for each level
