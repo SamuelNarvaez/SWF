@@ -62,7 +62,7 @@ class Trimesh():
         if weights is None:
             self.weights = np.ones((self.vertices.shape[0],1))
         else:
-            self.weights = weights.reshape((-1,1))
+            self.weights = np.asanyarray(weights).reshape((-1,1))
         
         if filters is None:
             # This assures a consistent shape for the (P,Q,A,B) Tuple. At the coarsest level, only P is defined. 
@@ -99,18 +99,16 @@ class Trimesh():
         return P,Q,A,B
 
     def modliftingScheme(self,P0,Q0,A0,B0):
-        '''
-        S` = None
-        T` = None
         
-        P = None
-        Q = None
-        A = A0 + T`@ B0
-        B = None
+        S_ = np.random.rand(Q0.shape[1],P0.shape[1]) #mxn matrix
+        T_ = np.random.rand(P0.shape[1],Q0.shape[1]) #nxm matrix
+        
+        P = P0 + Q0 @ S_
+        Q = Q0 - P0 @ T_
+        A = A0 + T_ @ B0
+        B = B0 - S_ @ A0
         
         return P,Q,A,B
-        '''
-        return P0,Q0,A0,B0
 
     def subdivide(self, project_to_sphere = False, modified = False, face_index=None):
         """
