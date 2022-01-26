@@ -106,7 +106,7 @@ class Trimesh():
         Im = np.identity(S_.shape[0]) #mxm identity matrix
         In = np.identity(T_.shape[0]) #nxn identity matrix
         
-        P = -Q0 @ S_ - P0 @ (In - T_@S_)
+        P = Q0 @ S_ + P0 @ (In - T_@S_)
         Q = Q0 - P0 @ T_
         A = A0 + T_ @ B0
         B = (Im - S_@T_)@B0 - S_@A0
