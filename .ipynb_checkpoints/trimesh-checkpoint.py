@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.preprocessing import StandardScaler
+import scipy.sparse as sparse
 
 class PrintArray:
 
@@ -85,10 +86,13 @@ class Trimesh():
     def __repr__(self):
         return f"mesh level {self.level}" + "\nnum vertices: \n" + str(self.vertices.shape[0]) + "\nnum faces: \n" + str(self.faces.shape[0]) + "\nweights: \n" + np.array_str(self.weights) 
 
-    def liftingScheme(self,P0,Q0,A0,B0):
-        
-        S = np.random.rand(Q0.shape[1],P0.shape[1]) #mxn matrix
-        T = np.random.rand(P0.shape[1],Q0.shape[1]) #nxm matrix
+    def liftingScheme(self,P0,Q0,A0,B0,adj):
+        m = Q0.shape[1]
+        n = P0.shape[1]
+        #S = np.random.rand(m,n) #mxn matrix coarse -> details
+        #T = np.random.rand(n,m) #nxm matrix details -> coarse
+        S = adj[-m:,:n]
+        T = adj[:n,-m:]
         
         Im = np.identity(S.shape[0]) #mxm identity matrix
         In = np.identity(T.shape[0]) #nxn identity matrix
@@ -100,10 +104,13 @@ class Trimesh():
         
         return P,Q,A,B
 
-    def modliftingScheme(self,P0,Q0,A0,B0):
-        
-        S_ = np.random.rand(Q0.shape[1],P0.shape[1]) #mxn matrix
-        T_ = np.random.rand(P0.shape[1],Q0.shape[1]) #nxm matrix
+    def modliftingScheme(self,P0,Q0,A0,B0,adj):
+        m = Q0.shape[1]
+        n = P0.shape[1]
+        #S_ = np.random.rand(m,n) #mxn matrix coarse -> details
+        #T_ = np.random.rand(n,m) #nxm matrix details -> coarse
+        S_ = adj[-m:,:n]
+        T_ = adj[:n,-m:]
         
         Im = np.identity(S_.shape[0]) #mxm identity matrix
         In = np.identity(T_.shape[0]) #nxn identity matrix
@@ -153,9 +160,9 @@ class Trimesh():
             return_counts=True,
             axis=0)
         # then only produce one midpoint per unique edge
-        mid = self.vertices[edges[unique]].mean(axis=1)
-        mid_idx = inverse.reshape((-1, 3)) + len(self.vertices)
-
+        mid = self.vertices[edges[unique]].mean(axis=1) #new vertices ordered by unique edges
+        mid_idx = inverse.reshape((-1, 3)) + len(self.vertices) 
+        
         # the new faces_subset with correct winding
         f = np.column_stack([faces_subset[:, 0],
                              mid_idx[:, 0],
@@ -170,6 +177,7 @@ class Trimesh():
                              mid_idx[:, 1],
                              mid_idx[:, 2]]).reshape((-1, 3))
         # add the 3 new faces_subset per old face
+
         new_faces = np.vstack((self.faces, f[len(face_index):]))
         # replace the old face with a smaller face
         new_faces[face_index] = f[:len(face_index)]
@@ -205,11 +213,24 @@ class Trimesh():
         
             B = Q.T
             
+        new_edges = np.sort(faces_to_edges(new_faces), axis=1)
+        _1, unique1, inverse1, counts1 = np.unique(
+            edges,
+            return_index=True,
+            return_inverse=True,
+            return_counts=True,
+            axis=0)
+        
+        arr = new_edges[unique1]
+        shape = (new_vertices.shape[0],new_vertices.shape[0])
+        adj = sparse.coo_matrix((np.ones((arr.shape[0]*2)), (np.hstack((arr[:, 0],arr[:,1])), np.hstack((arr[:, 1],arr[:,0])))), 
+                                shape=shape,dtype=arr.dtype).todense()
+        
         if modified:
-            P,Q,A,B = self.modliftingScheme(P,Q,A,B)
+            P,Q,A,B = self.modliftingScheme(P,Q,A,B,adj)
             
         else:
-            P,Q,A,B = self.liftingScheme(P,Q,A,B)
+            P,Q,A,B = self.liftingScheme(P,Q,A,B,adj)
         
         new_weights = P @ self.weights
         
