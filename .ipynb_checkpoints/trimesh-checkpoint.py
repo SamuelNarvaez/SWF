@@ -215,7 +215,7 @@ class Trimesh():
             
         new_edges = np.sort(faces_to_edges(new_faces), axis=1)
         _1, unique1, inverse1, counts1 = np.unique(
-            edges,
+            new_edges,
             return_index=True,
             return_inverse=True,
             return_counts=True,
@@ -223,9 +223,9 @@ class Trimesh():
         
         arr = new_edges[unique1]
         shape = (new_vertices.shape[0],new_vertices.shape[0])
+        #create adjacency matrix including the newly generated vertices
         adj = sparse.coo_matrix((np.ones((arr.shape[0]*2)), (np.hstack((arr[:, 0],arr[:,1])), np.hstack((arr[:, 1],arr[:,0])))), 
-                                shape=shape,dtype=arr.dtype).todense()
-        
+                                shape=shape,dtype=arr.dtype).toarray() 
         if modified:
             P,Q,A,B = self.modliftingScheme(P,Q,A,B,adj)
             
