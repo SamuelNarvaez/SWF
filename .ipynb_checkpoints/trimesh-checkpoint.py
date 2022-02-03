@@ -87,12 +87,14 @@ class Trimesh():
         return f"mesh level {self.level}" + "\nnum vertices: \n" + str(self.vertices.shape[0]) + "\nnum faces: \n" + str(self.faces.shape[0]) + "\nweights: \n" + np.array_str(self.weights) 
 
     def liftingScheme(self,P0,Q0,A0,B0,adj):
-        m = Q0.shape[1]
-        n = P0.shape[1]
+        m = Q0.shape[1] #details
+        n = P0.shape[1] #coarse
         #S = np.random.rand(m,n) #mxn matrix coarse -> details
         #T = np.random.rand(n,m) #nxm matrix details -> coarse
-        S = adj[-m:,:n]
-        T = adj[:n,-m:]
+        #S = (1/6)*adj[-m:,:n]
+        #T = (1/4)*adj[:n,-m:] + (1/12)*(adj@adj@adj)[:n,-m:]
+        S = (1/6)*adj[-m:,:n]
+        T = (1/2)*adj[:n,-m:]
         
         Im = np.identity(S.shape[0]) #mxm identity matrix
         In = np.identity(T.shape[0]) #nxn identity matrix
@@ -105,12 +107,14 @@ class Trimesh():
         return P,Q,A,B
 
     def modliftingScheme(self,P0,Q0,A0,B0,adj):
-        m = Q0.shape[1]
-        n = P0.shape[1]
+        m = Q0.shape[1] #details
+        n = P0.shape[1] #coarse
         #S_ = np.random.rand(m,n) #mxn matrix coarse -> details
         #T_ = np.random.rand(n,m) #nxm matrix details -> coarse
-        S_ = adj[-m:,:n]
-        T_ = adj[:n,-m:]
+        #S_ = (1/6)*adj[-m:,:n]
+        #T_ = (1/4)*adj[:n,-m:] + (1/12)*(adj@adj@adj)[:n,-m:]
+        S_ = (1/6)*adj[-m:,:n]
+        T_ = (1/2)*adj[:n,-m:]
         
         Im = np.identity(S_.shape[0]) #mxm identity matrix
         In = np.identity(T_.shape[0]) #nxn identity matrix
@@ -122,7 +126,7 @@ class Trimesh():
         
         return P,Q,A,B
 
-    def subdivide(self, project_to_sphere = False, modified = False, face_index=None):
+    def subdivide(self, project_to_sphere = True, modified = False, face_index=None):
         """
         Subdivide a mesh into smaller triangles.
         Note that if `face_index` is passed, only those
