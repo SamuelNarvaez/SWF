@@ -8,4 +8,4 @@ This is a working repository for ongoing research on Spherical Wavelet Format (S
 
 And supports updating the trivial interpolating filter via the Lifting Scheme or the Modified Lifting Scheme.
 
-The notebooks deal with various vizualization strategies to see the mesh as well as the visualization of portions of the filters on the mesh. 
+The notebooks deal with various vizualization strategies to see the mesh and portions of the filters as weights on the mesh as well as a space for testing during development. 
