@@ -37,6 +37,41 @@ def faces_to_edges(faces, return_index=False):
     edges = faces[:, [0, 1, 1, 2, 2, 0]].reshape((-1, 2))
     return edges
 
+def get_second_neighbors(adj):
+    """
+    Given a an adjacency matrix, return a matrix of second neighbors
+    Parameters
+    -----------
+    adj : (n, n) int
+      A matrix where a_ij == 1 iff node i is incident to node j in the graph
+    Returns
+    -----------
+    second : (n, n) int
+      A matrix where a_ij == 1 iff node i is a second neighbor to node j
+    """
+    numPaths = adj @ adj #A^2 gives the number of walks of length 2 at a_ij between vertex i and vertex j
+    pathExists = numPaths > 0 #a_ij == True if there exists at least one walk of length two between vertices i and j
+    second = pathExists.astype(int)-adj-np.eye(adj.shape[0]) #exclude vertices that are first neighbors, and identity (a_ii)
+    return second
+
+def get_third_neighbors(adj):
+    """
+    Given a an adjacency matrix, return a matrix of third neighbors
+    Parameters
+    -----------
+    adj : (n, n) int
+      A matrix where a_ij == 1 iff node i is incident to node j in the graph
+    Returns
+    -----------
+    third : (n, n) int
+      A matrix where a_ij == 1 iff node i is a third neighbor to node j
+    """
+    second = get_second_neighbors(adj)
+    numPaths = adj @ adj @ adj #A^3 gives the number of walks of length 3 at a_ij between vertex i and vertex j
+    pathExists = numPaths > 0 #a_ij == True if there exists at least one walk of length three between vertex i and j
+    third = pathExists.astype(int)-second-adj-np.eye(adj.shape[0]) #exclude vertices that are first and second neighbors, and identity (a_ii)
+    return third
+
 class Trimesh():
     def __init__(self,vertices=None,faces=None,weights=None,filters=None,level=0):
         """
@@ -89,12 +124,11 @@ class Trimesh():
     def liftingScheme(self,P0,Q0,A0,B0,adj):
         m = Q0.shape[1] #details
         n = P0.shape[1] #coarse
-        #S = np.random.rand(m,n) #mxn matrix coarse -> details
-        #T = np.random.rand(n,m) #nxm matrix details -> coarse
-        #S = (1/6)*adj[-m:,:n]
-        #T = (1/4)*adj[:n,-m:] + (1/12)*(adj@adj@adj)[:n,-m:]
+        #S is mxn matrix coarse -> details
+        #T is nxm matrix details -> coarse
+
         S = (1/6)*adj[-m:,:n]
-        T = (1/2)*adj[:n,-m:]
+        T = (3/14)*adj[:n,-m:] + (1/7)*get_second_neighbors(adj)[:n,-m:] + (1/14)*get_third_neighbors(adj)[:n,-m:]
         
         Im = np.identity(S.shape[0]) #mxm identity matrix
         In = np.identity(T.shape[0]) #nxn identity matrix
@@ -109,12 +143,11 @@ class Trimesh():
     def modliftingScheme(self,P0,Q0,A0,B0,adj):
         m = Q0.shape[1] #details
         n = P0.shape[1] #coarse
-        #S_ = np.random.rand(m,n) #mxn matrix coarse -> details
-        #T_ = np.random.rand(n,m) #nxm matrix details -> coarse
-        #S_ = (1/6)*adj[-m:,:n]
-        #T_ = (1/4)*adj[:n,-m:] + (1/12)*(adj@adj@adj)[:n,-m:]
+        #S_ is mxn matrix coarse -> details
+        #T_ is nxm matrix details -> coarse
+        
         S_ = (1/6)*adj[-m:,:n]
-        T_ = (1/2)*adj[:n,-m:]
+        T_ = (3/14)*adj[:n,-m:] + (1/7)*get_second_neighbors(adj)[:n,-m:] + (1/14)*get_third_neighbors(adj)[:n,-m:]
         
         Im = np.identity(S_.shape[0]) #mxm identity matrix
         In = np.identity(T_.shape[0]) #nxn identity matrix
@@ -126,7 +159,7 @@ class Trimesh():
         
         return P,Q,A,B
 
-    def subdivide(self, project_to_sphere = True, modified = False, face_index=None):
+    def subdivide(self, project_to_sphere = True, modified = True, face_index=None):
         """
         Subdivide a mesh into smaller triangles.
         Note that if `face_index` is passed, only those
