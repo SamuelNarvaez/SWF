@@ -1,5 +1,4 @@
 import numpy as np
-from sklearn.preprocessing import StandardScaler
 import scipy.sparse as sparse
             
 def faces_to_edges(faces, return_index=False):
@@ -72,10 +71,9 @@ class Trimesh():
         """
         self.level = level
         if vertices is not None:
-            self.vertices = StandardScaler(with_std=False).fit_transform(vertices)
+            self.vertices = vertices
         if self.level==0:
-            for i in range(len(self.vertices)):
-                self.vertices[i] = self.vertices[i]/np.linalg.norm(self.vertices[i])
+            self.vertices = self.vertices/np.linalg.norm(self.vertices,axis=1).reshape(-1,1)
         self.faces = faces
         
         if filters is None:
@@ -192,12 +190,11 @@ class Trimesh():
         # replace the old face with a smaller face
         new_faces[face_index] = f[:len(face_index)]
 
-        #turn new midpoints into unit vectors w.r.t. the origin
-        if project_to_sphere:
-            for i in range(len(mid)):
-                mid[i] = mid[i]/np.linalg.norm(mid[i])
-
         new_vertices = np.vstack((self.vertices, mid))
+        
+         #turn new midpoints into unit vectors w.r.t. the origin
+        if project_to_sphere:
+            new_vertices = new_vertices/np.linalg.norm(new_vertices,axis=1).reshape(-1,1)
         
         if self.identity is not None:
             #if we're at the coarsest level 0
