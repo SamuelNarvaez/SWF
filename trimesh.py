@@ -1,60 +1,9 @@
 import numpy as np
 import scipy.sparse as sparse
-            
-def faces_to_edges(faces, return_index=False):
-    """
-    Given a list of faces (n,3), return a list of edges (n*3,2)
-    Parameters
-    -----------
-    faces : (n, 3) int
-      Vertex indices representing faces
-    Returns
-    -----------
-    edges : (n*3, 2) int
-      Vertex indices representing edges
-    """
-    faces = np.asanyarray(faces)
-    # each face has three edges
-    edges = faces[:, [0, 1, 1, 2, 2, 0]].reshape((-1, 2))
-    return edges
-
-def get_second_neighbors(adj):
-    """
-    Given a an adjacency matrix, return a matrix of second neighbors
-    Parameters
-    -----------
-    adj : (n, n) int
-      A matrix where a_ij == 1 iff node i is incident to node j in the graph
-    Returns
-    -----------
-    second : (n, n) int
-      A matrix where a_ij == 1 iff node i is a second neighbor to node j
-    """
-    numPaths = adj @ adj #A^2 gives the number of walks of length 2 at a_ij between vertex i and vertex j
-    pathExists = numPaths > 0 #a_ij == True if there exists at least one walk of length two between vertices i and j
-    second = pathExists.astype(int)-adj-np.eye(adj.shape[0]) #exclude vertices that are first neighbors, and identity (a_ii)
-    return second
-
-def get_third_neighbors(adj):
-    """
-    Given a an adjacency matrix, return a matrix of third neighbors
-    Parameters
-    -----------
-    adj : (n, n) int
-      A matrix where a_ij == 1 iff node i is incident to node j in the graph
-    Returns
-    -----------
-    third : (n, n) int
-      A matrix where a_ij == 1 iff node i is a third neighbor to node j
-    """
-    second = get_second_neighbors(adj)
-    numPaths = adj @ adj @ adj #A^3 gives the number of walks of length 3 at a_ij between vertex i and vertex j
-    pathExists = numPaths > 0 #a_ij == True if there exists at least one walk of length three between vertex i and j
-    third = pathExists.astype(int)-second-adj-np.eye(adj.shape[0]) #exclude vertices that are first and second neighbors, and identity (a_ii)
-    return third
+from utils import faces_to_edges,get_second_neighbors,get_third_neighbors
 
 class Trimesh():
-    def __init__(self,vertices=None,faces=None,filters=None,level=0):
+    def __init__(self,vertices=None,faces=None,filters=None,level=0,ALPHA=1/2,BETA=1/8,GAMMA=-1/16,LAMBDA=1/6):
         """
         vertices : (n, 3) float
            Array of vertex locations
@@ -68,6 +17,14 @@ class Trimesh():
             B - m x N : takes fine to details 
         level : int
           Level of subdivision of the mesh
+        ALPHA : float
+            multiplicative parameter for first neighbors, used in constructing T
+        BETA : float
+            multiplicative parameter for second neighbors, used in constructing T
+        GAMMA : float
+            multiplicative parameter for third neighbors, used in constructing T
+        LAMBDA : float
+            multiplicative parameter for first neighbors, used in constructing S
         """
         self.level = level
         if vertices is not None:
@@ -77,22 +34,20 @@ class Trimesh():
         self.faces = faces
         
         if filters is None:
-            # This assures a consistent shape for the (P,Q,A,B) Tuple. At the coarsest level, only P is defined. 
+            # This assures a consistent shape for the (P,Q,A,B) Tuple. At the coarsest level P,Q,A, and B are undefined. 
             
-            self.identity = np.identity(self.vertices.shape[0])
-        
+            eye = np.identity(self.vertices.shape[0])
             
-            self.filters = (self.identity,None,None,None)
-            
-        elif len(filters)==1:
-            self.identity = filters[0]
-            self.filters = (self.identity,None,None,None)
+            self.filters = (eye,eye,eye,eye)
             
         else:
-            #This lets us iteratively construct the filters for each level
-            
-            self.identity = None
             self.filters = filters
+        
+        #set lifting parameters
+        self.ALPHA = ALPHA
+        self.BETA = BETA
+        self.GAMMA = GAMMA
+        self.LAMBDA = LAMBDA
 
     def __repr__(self):
         return f"mesh level {self.level}" + "\nnum vertices: \n" + str(self.vertices.shape[0])
@@ -102,9 +57,9 @@ class Trimesh():
         n = P0.shape[1] #coarse
         #S is mxn matrix coarse -> details
         #T is nxm matrix details -> coarse
-
-        S = (1/6)*adj[-m:,:n]
-        T = (3/14)*adj[:n,-m:] + (1/7)*get_second_neighbors(adj)[:n,-m:] + (1/14)*get_third_neighbors(adj)[:n,-m:]
+        
+        S = self.LAMBDA * adj[-m:,:n]
+        T = self.ALPHA * adj[:n,-m:] + self.BETA * get_second_neighbors(adj)[:n,-m:] + self.GAMMA * get_third_neighbors(adj)[:n,-m:]
         
         Im = np.identity(S.shape[0]) #mxm identity matrix
         In = np.identity(T.shape[0]) #nxn identity matrix
@@ -122,8 +77,8 @@ class Trimesh():
         #S_ is mxn matrix coarse -> details
         #T_ is nxm matrix details -> coarse
         
-        S_ = (1/6)*adj[-m:,:n]
-        T_ = (3/14)*adj[:n,-m:] + (1/7)*get_second_neighbors(adj)[:n,-m:] + (1/14)*get_third_neighbors(adj)[:n,-m:]
+        S_ = self.LAMBDA * adj[-m:,:n]
+        T_ = self.ALPHA * adj[:n,-m:] + self.BETA * get_second_neighbors(adj)[:n,-m:] + self.GAMMA * get_third_neighbors(adj)[:n,-m:]
         
         Im = np.identity(S_.shape[0]) #mxm identity matrix
         In = np.identity(T_.shape[0]) #nxn identity matrix
@@ -148,7 +103,7 @@ class Trimesh():
             if True : new vertices generated by subdivision
                 will be projected to the surface of the unit sphere
             if False : new vertices will stay inline with their two parent vertices.
-        modified : wether or not to use the modified (True) lifting scheme or the classic (False).
+        modified : wether or not to use the modified lifting scheme (True) or the unmodified lifting scheme (False).
           if True: calls modliftingScheme() to construct non-trivial P,Q,A,B
           if False: calls liftingScheme() to construct non-trivial P,Q,A,B
           
@@ -196,10 +151,10 @@ class Trimesh():
         if project_to_sphere:
             new_vertices = new_vertices/np.linalg.norm(new_vertices,axis=1).reshape(-1,1)
         
-        if self.identity is not None:
-            #if we're at the coarsest level 0
+        if self.level==0:
+            eye = self.filters[0]
             
-            P = np.vstack((self.identity,np.zeros((mid.shape[0],self.identity.shape[1]))))
+            P = np.vstack((eye,np.zeros((mid.shape[0],eye.shape[1]))))
         
             Q = np.vstack((np.zeros((P.shape[1],P.shape[0]-P.shape[1])),np.identity(P.shape[0]-P.shape[1])))
         
