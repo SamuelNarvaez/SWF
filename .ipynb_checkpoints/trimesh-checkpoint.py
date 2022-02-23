@@ -62,9 +62,11 @@ class Trimesh():
         faces : (m, 3) int
           Indexes of vertices which make up triangular faces
         filters : 4-tuple of matrices (P,Q,A,B)
-            xxxxxxxxxxxxxxxxxxxxxxxx
-            xxxxxxxxxxxxxxxxxxxxxxxx
-            xxxxxxxxxxxxxxxxxxxxxxxx
+            where N = n+m
+            P - N x n : takes coarse to fine 
+            Q - N x m : takes details to fine
+            A - n x N : takes fine to coarse 
+            B - m x N : takes fine to details 
         level : int
           Level of subdivision of the mesh
         """
