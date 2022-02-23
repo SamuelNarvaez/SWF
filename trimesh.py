@@ -1,24 +1,6 @@
 import numpy as np
 from sklearn.preprocessing import StandardScaler
 import scipy.sparse as sparse
-
-class PrintArray:
-
-    def __init__(self, **kwargs):
-        self._kwargs = kwargs
-
-    def __repr__(self):
-        rpr = ('PrintArray(' +
-               ', '.join([f'{name}={value}' for name, value in self._kwargs.items()]) +
-               ')')
-        return rpr
-
-    def __array_ufunc__(self, ufunc, method, *inputs, **kwargs):
-        if ufunc != np.floor_divide:
-            return NotImplemented
-        a = inputs[0]
-        with np.printoptions(**self._kwargs):
-            print(a)
             
 def faces_to_edges(faces, return_index=False):
     """
@@ -73,17 +55,16 @@ def get_third_neighbors(adj):
     return third
 
 class Trimesh():
-    def __init__(self,vertices=None,faces=None,weights=None,filters=None,level=0):
+    def __init__(self,vertices=None,faces=None,filters=None,level=0):
         """
         vertices : (n, 3) float
            Array of vertex locations
         faces : (m, 3) int
           Indexes of vertices which make up triangular faces
-        weights : (n,1) float
-          weights on each vertex
-        filters : (n,n) float
-            square matrix representing the subdivision filter for the weights
-            if no initial filter is provided, identity is used.
+        filters : 4-tuple of matrices
+            xxxxxxxxxxxxxxxxxxxxxxxx
+            xxxxxxxxxxxxxxxxxxxxxxxx
+            xxxxxxxxxxxxxxxxxxxxxxxx
         level : int
           Level of subdivision of the mesh
         """
@@ -94,11 +75,6 @@ class Trimesh():
             for i in range(len(self.vertices)):
                 self.vertices[i] = self.vertices[i]/np.linalg.norm(self.vertices[i])
         self.faces = faces
-        
-        if weights is None:
-            self.weights = np.ones((self.vertices.shape[0],1))
-        else:
-            self.weights = np.asanyarray(weights).reshape((-1,1))
         
         if filters is None:
             # This assures a consistent shape for the (P,Q,A,B) Tuple. At the coarsest level, only P is defined. 
@@ -119,7 +95,7 @@ class Trimesh():
             self.filters = filters
 
     def __repr__(self):
-        return f"mesh level {self.level}" + "\nnum vertices: \n" + str(self.vertices.shape[0]) + "\nnum faces: \n" + str(self.faces.shape[0]) + "\nweights: \n" + np.array_str(self.weights) 
+        return f"mesh level {self.level}" + "\nnum vertices: \n" + str(self.vertices.shape[0]) + "\nnum faces: \n" + str(self.faces.shape[0]) 
 
     def liftingScheme(self,P0,Q0,A0,B0,adj):
         m = Q0.shape[1] #details
@@ -178,7 +154,6 @@ class Trimesh():
         ----------
         New subdivided trimesh object
         """
-        pa = PrintArray(precision=2, linewidth=150, suppress=True)
         
         if face_index is None:
             face_index = np.arange(len(self.faces))
@@ -269,13 +244,9 @@ class Trimesh():
         else:
             P,Q,A,B = self.liftingScheme(P,Q,A,B,adj)
         
-        new_weights = P @ self.weights
-        
         new_filters = (P,Q,A,B)
 
-        return Trimesh(new_vertices, new_faces, new_weights, new_filters, self.level + 1)
+        return Trimesh(new_vertices, new_faces, new_filters, self.level + 1)
 
 if __name__ == "__main__":
-    mesh0 = Trimesh(np.array([[0,0,0],[1,0,0],[0,1,0],[1,1,0]]),np.array([[0,1,2],[1,3,2]]))
-    print(mesh0)
-    mesh1 = mesh0.subdivide()
+    pass
