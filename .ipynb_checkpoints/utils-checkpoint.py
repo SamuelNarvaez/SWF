@@ -51,3 +51,6 @@ def get_third_neighbors(adj):
     pathExists = numPaths > 0 #a_ij == True if there exists at least one walk of length three between vertex i and j
     third = pathExists.astype(int)-second-adj-np.eye(adj.shape[0]) #exclude vertices that are first and second neighbors, and identity (a_ii)
     return third
+
+def check_sum_to_1():
+    pass

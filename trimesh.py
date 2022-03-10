@@ -1,6 +1,6 @@
 import numpy as np
 import scipy.sparse as sparse
-from utils import faces_to_edges,get_second_neighbors,get_third_neighbors
+from utils import *
 
 class Trimesh():
     def __init__(self,vertices=None,faces=None,filters=None,level=0,ALPHA=1/2,BETA=1/8,GAMMA=-1/16,LAMBDA=1/6):
@@ -196,7 +196,7 @@ class Trimesh():
         
         new_filters = (P,Q,A,B)
 
-        return Trimesh(new_vertices, new_faces, new_filters, self.level + 1)
+        return Trimesh(new_vertices, new_faces, new_filters, self.level + 1, ALPHA=self.ALPHA, BETA=self.BETA, GAMMA=self.GAMMA, LAMBDA=self.LAMBDA)
 
 if __name__ == "__main__":
     pass
