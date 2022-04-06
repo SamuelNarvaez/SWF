@@ -72,7 +72,7 @@ def weights3D(mesh, weights, name=''):
 
     fig = make_subplots(
               rows=1, cols=1, 
-              subplot_titles=(f'{name} Level {mesh.level} 3D Mesh'),
+              subplot_titles=[f'{name}'],
               horizontal_spacing=0.02,
               specs=[[{"type": "scene"}]*1])  
 
