@@ -45,10 +45,14 @@ class Trimesh():
             self.filters = filters
         
         #set lifting parameters
-        self.ALPHA = ALPHA
-        self.BETA = BETA
-        self.GAMMA = GAMMA
-        self.LAMBDA = LAMBDA
+        
+        if checkCoeffRelations(ALPHA,BETA,GAMMA):
+            self.ALPHA = ALPHA
+            self.BETA = BETA
+            self.GAMMA = GAMMA
+            self.LAMBDA = LAMBDA
+        else:
+            raise ValueError('lifting coefficients do not satisfy the relation: 2a+2b+4c=1')  
 
     def __repr__(self):
         return f"mesh level {self.level}" + "\nnum vertices: \n" + str(self.vertices.shape[0])

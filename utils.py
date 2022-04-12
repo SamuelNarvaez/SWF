@@ -62,6 +62,12 @@ def get_third_neighbors(adj):
     
     return third
 
+def velocity():
+    pass
+
+def checkCoeffRelations(a,b,c):
+    return 2*a + 2*b + 4*c == 1
+
 def check_sum_to_1(mat,axis):
     return np.isclose(np.sum(mat,axis=axis),np.ones(mat.shape[(axis+1)%2]))
 
