@@ -14,7 +14,7 @@ class SWF():
             truncation level
         
         '''
-        presets = {'oct': Trimesh(np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]),np.array([[1,2,4],[1,3,4],[3,0,4],[0,2,4],[1,3,5],[3,0,5],[0,2,5],[2,1,5]]),ALPHA=1/2,BETA=1/8,GAMMA=-1/24),
+        presets = {'oct': Trimesh(np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]),np.array([[1,2,4],[1,3,4],[3,0,4],[0,2,4],[1,3,5],[3,0,5],[0,2,5],[2,1,5]]),ALPHA=1/2,BETA=1/8,GAMMA=-1/16),
                    }
         if type(base) is str:
             self.base = presets[base]
