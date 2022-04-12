@@ -1,9 +1,10 @@
 import numpy as np
+from numpy import inf
 import scipy.sparse as sparse
 from utils import *
 
 class Trimesh():
-    def __init__(self,vertices=None,faces=None,filters=None,level=0,ALPHA=1/2,BETA=1/8,GAMMA=-1/16,DELTA=0,LAMBDA=1/6):
+    def __init__(self,vertices=None,faces=None,filters=None,level=0,ALPHA=1/2,BETA=1/8,GAMMA=-1/16,LAMBDA=1/6):
         """
         vertices : (n, 3) float
            Array of vertex locations
@@ -23,8 +24,6 @@ class Trimesh():
             multiplicative parameter for second neighbors, used in constructing T
         GAMMA : float
             multiplicative parameter for third neighbors, used in constructing T
-        DELTA : float
-            multiplicative parameter for fourth neighbors, used in constructing T
         LAMBDA : float
             multiplicative parameter for first neighbors, used in constructing S
         """
@@ -49,7 +48,6 @@ class Trimesh():
         self.ALPHA = ALPHA
         self.BETA = BETA
         self.GAMMA = GAMMA
-        self.DELTA = DELTA
         self.LAMBDA = LAMBDA
 
     def __repr__(self):
@@ -77,7 +75,7 @@ class Trimesh():
         
         S = self.LAMBDA * adj[-m:,:n]
         T = ALPHA * adj[:n,-m:] + BETA * adj2[:n,-m:] + GAMMA * adj3[:n,-m:] + DELTA * adj4[:n,-m:]
-        print(np.all(check_sum_to_1(T_@B0,0)[n:]))
+        #print(np.all(check_sum_to_1(T_@B0,0)[n:]))
         
         Im = np.identity(S.shape[0]) #mxm identity matrix
         In = np.identity(T.shape[0]) #nxn identity matrix
@@ -95,23 +93,16 @@ class Trimesh():
         #S_ is mxn matrix coarse -> details
         #T_ is nxm matrix details -> coarse
         adj2 = get_second_neighbors(adj)
-        adj3, adj4 = get_third_neighbors(adj)
+        adj3 = get_third_neighbors(adj)
         
-        np.seterr(divide='ignore', invalid='ignore') #the following computations regularize the parameters (Alpha,Beta,Gamma,Delta) for first, second, third and fourth neighbors for each of the details points, using the number of neighbors they actually have, i.e. the topology of the neighborhood of each point. 
+        np.seterr(divide='ignore', invalid='ignore') #the following computations regularize the parameters (Alpha,Beta,Gamma) for first, second and third neighbors for each of the details points, using the number of neighbors they actually have, i.e. the topology of the neighborhood of each point. 
         ALPHA = 2*self.ALPHA/np.sum(adj[-m:,:n],axis=1)
         BETA = 2*self.BETA/np.sum(adj2[-m:,:n],axis=1)
         GAMMA = 4*self.GAMMA/np.sum(adj3[-m:,:n],axis=1)
-        DELTA = 2*self.DELTA/np.sum(adj4[-m:,:n],axis=1)
        
-        #get rid of nans if we have any.
-        ALPHA[np.isnan(ALPHA)] = 0
-        BETA[np.isnan(BETA)] = 0
-        GAMMA[np.isnan(GAMMA)] = 0
-        DELTA[np.isnan(DELTA)] = 0
-        
         S_ = self.LAMBDA * adj[-m:,:n]
-        T_ = ALPHA * adj[:n,-m:] + BETA * adj2[:n,-m:] + GAMMA * adj3[:n,-m:] + DELTA * adj4[:n,-m:]
-        print(np.all(check_sum_to_1(T_@B0,0)[n:]))
+        T_ = ALPHA * adj[:n,-m:] + BETA * adj2[:n,-m:] + GAMMA * adj3[:n,-m:]
+        #print(np.all(check_sum_to_1(T_@B0,0)[n:]))
         
         Im = np.identity(S_.shape[0]) #mxm identity matrix
         In = np.identity(T_.shape[0]) #nxn identity matrix

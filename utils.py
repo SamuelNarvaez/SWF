@@ -54,12 +54,13 @@ def get_third_neighbors(adj):
     second = get_second_neighbors(adj)
     numPaths = adj @ adj @ adj #A^3 gives the number of walks of length 3 at a_ij between vertex i and vertex j
     pathExists = numPaths > 1 #a_ij == True if there exists at least two walks of length three between vertex i and j. Note that here we use at least two, because if there exists only one walk of length three between i and j, we consider this point a fourth neighbor. For more on this, see figure 3 of Interpolating Subdivision for Meshes with Arbitrary Topology by Zorin, Schroder, and Sweldens. 
-    fourthExists = numPaths == 1 #a_ij == True if there exists only one walk of length three between vertex i and j. This is key to 
+    #fourthExists = numPaths == 1 #a_ij == True if there exists only one walk of length three between vertex i and j. This is key to 
+    #fourth = fourthExists.astype(int)
+    #fourth[fourth < 0] = 0
     third = pathExists.astype(int)-second-adj-np.eye(adj.shape[0]) #exclude vertices that are first and second neighbors, and identity (a_ii)
     third[third < 0] = 0
-    fourth = fourthExists.astype(int)
-    fourth[fourth < 0] = 0
-    return third , fourth
+    
+    return third
 
 def check_sum_to_1(mat,axis):
     return np.isclose(np.sum(mat,axis=axis),np.ones(mat.shape[(axis+1)%2]))
