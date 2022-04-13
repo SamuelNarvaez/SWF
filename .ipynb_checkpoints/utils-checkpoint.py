@@ -62,8 +62,39 @@ def get_third_neighbors(adj):
     
     return third
 
-def velocity():
-    pass
+def cost(SWF,wp,wl,wt):
+    '''
+    Given a SWF defined over some mesh with some lifting coefficients, compute the acoustic pressure, longitudinal velocity, and 
+    transverse velocity and compute a cost using these values.
+    -----------
+    SWF: SWF object
+        the predefined SWF
+    wp : int
+        weight for the pressure component 
+    wl : int
+        weight for the longitudinal velocity component 
+    wt : int
+        weight for the transverse velocity component 
+    Returns
+    -----------
+    cost : int
+          cost value
+    '''
+    N = SWF.meshes[-1].vertices.shape[0]
+    E = np.zeros([N,1])
+    for i in range(N):
+        onesource = np.zeros([N,1])
+        onesource[i] = 1
+        c0 = SWF.phi2s[0]@onesource
+        V_ = c0 * SWF.base.vertices #velocity vector for each vertex
+        Vt_ = np.sum(V_ * SWF.base.vertices,axis=1).reshape(-1,1)*SWF.base.vertices #transverse velocity component for each vertex
+        Vl_ = V_ - Vt_ #logitudinal velocity component for each vertex
+        Vt = np.linalg.norm(Vt_,axis=1) #norm of transverse velocity vector
+        Vl = np.linalg.norm(Vl_,axis=1) #norm of longitudinal velocity vector
+        Ei = wp*((np.sum(c0)-1)**2) + wl*((np.sum(Vl)-1)**2) + wt*(np.sum(Vt)**2) #the cost as computed for a source at vertex i
+        E[i]=Ei
+    cost = np.sum(E)/N
+    return cost
 
 def checkCoeffRelations(a,b,c):
     return 2*a + 2*b + 4*c == 1
