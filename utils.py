@@ -87,10 +87,10 @@ def cost(SWF,wl,wt):
         onesource[i] = 1
         ui = SWF.meshes[-1].vertices[i]
         c0 = SWF.phi2s[0]@onesource
-        V_ = c0 * SWF.base.vertices #velocity vector for each vertex
-        Vl = np.sum(V_ * ui,axis=1)
-        Vt = np.linalg.norm(np.cross(ui,V_),axis=1)
-        Ei = wl*((np.sum(Vl)-1)**2) + wt*(np.sum(Vt)**2) #the cost as computed for a source at vertex i
+        V_ = np.sum(c0 * SWF.base.vertices,axis=0)#velocity vector for each vertex
+        Vl = np.sum(V_ * ui)
+        Vt = np.linalg.norm(np.cross(V_,ui))
+        Ei = wl*((Vl-1)**2) + wt*(Vt**2) #the cost as computed for a source at vertex i
         E[i]=Ei
     cost = np.sum(E)/N
     return cost
