@@ -26,7 +26,7 @@ class SWF():
                    '7.0.4':
                    Trimesh(vertices704,faces704,ALPHA=55/100,BETA=37/1000,GAMMA=-87/2000),
                    '3.0.1':
-                   Trimesh(vertices301,faces301,ALPHA=1/2,BETA=0,GAMMA=0),
+                   Trimesh(vertices301,faces301,ALPHA=1/2,BETA=1/8,GAMMA=-1/16),
                    #'5.1.4':
                    #Trimesh(ALPHA=1/2,BETA=1/8,GAMMA=-1/16),
                    }
