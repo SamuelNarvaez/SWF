@@ -7,6 +7,8 @@ vertices704 = np.apply_along_axis(lambda x: toCartesian(x),1,layout704)
 faces704 = np.array([[6,4,10],[10,4,8],[8,4,2],[8,2,0],[8,7,0],[7,0,1],[7,1,3],[7,3,9],[9,3,5],[10,7,9],[10,8,7],[10,6,5],[10,9,5]])
 vertices301 = np.array([[1,0,0],[-1/2,np.sqrt(3)/2,0],[-1/2,-np.sqrt(3)/2,0],[0,0,1]])
 faces301 = np.array([[0,1,3],[1,2,3],[2,0,3]])
+verticesOCT = np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])
+facesOCT = np.array([[1,2,4],[1,3,4],[3,0,4],[0,2,4],[1,3,5],[3,0,5],[0,2,5],[2,1,5]])
 
 class SWF():
     def __init__(self,base='oct',n=3,l=0):
@@ -21,12 +23,12 @@ class SWF():
             truncation level
         
         '''
-        presets = {'oct': 
-                   Trimesh(np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]),np.array([[1,2,4],[1,3,4],[3,0,4],[0,2,4],[1,3,5],[3,0,5],[0,2,5],[2,1,5]]),ALPHA=61/100,BETA=-3/200,GAMMA=-19/400),
+        presets = {'OCT': 
+                   Trimesh(verticesOCT,facesOCT,ALPHA=0.609151,BETA=-0.015081,GAMMA=-0.047035),
                    '7.0.4':
-                   Trimesh(vertices704,faces704,ALPHA=55/100,BETA=37/1000,GAMMA=-87/2000),
+                   Trimesh(vertices704,faces704,ALPHA=0.546418,BETA=0.036781,GAMMA=-0.0416),
                    '3.0.1':
-                   Trimesh(vertices301,faces301,ALPHA=0.621483,BETA=0.013046,GAMMA=-0.067265),
+                   Trimesh(vertices301,faces301,ALPHA=0.599363,BETA=0.033933,GAMMA=-0.066648),
                    #'5.1.4':
                    #Trimesh(ALPHA=1/2,BETA=1/8,GAMMA=-1/16),
                    }
