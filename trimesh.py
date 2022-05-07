@@ -63,7 +63,7 @@ class Trimesh():
         #S is mxn matrix coarse -> details
         #T is nxm matrix details -> coarse
         adj2 = get_second_neighbors(adj)
-        adj3, adj4 = get_third_neighbors(adj)
+        adj3 = get_third_neighbors(adj)
         
         np.seterr(divide='ignore', invalid='ignore') #the following computations regularize the parameters (Alpha,Beta,Gamma,Delta) for first, second, third and fourth neighbors for each of the details points, using the number of neighbors they actually have, i.e. the topology of the neighborhood of each point. 
         ALPHA = 2*self.ALPHA/np.sum(adj[-m:,:n],axis=1)
@@ -78,7 +78,7 @@ class Trimesh():
         GAMMA[GAMMA == -inf] = 0
         
         S = self.LAMBDA * adj[-m:,:n]
-        T = ALPHA * adj[:n,-m:] + BETA * adj2[:n,-m:] + GAMMA * adj3[:n,-m:] + DELTA * adj4[:n,-m:]
+        T = ALPHA * adj[:n,-m:] + BETA * adj2[:n,-m:] + GAMMA * adj3[:n,-m:]
         
         Im = np.identity(S.shape[0]) #mxm identity matrix
         In = np.identity(T.shape[0]) #nxn identity matrix
@@ -103,13 +103,18 @@ class Trimesh():
         BETA = 2*self.BETA/np.sum(adj2[-m:,:n],axis=1)
         GAMMA = 4*self.GAMMA/np.sum(adj3[-m:,:n],axis=1)
         
+        LAMBDA = 6*self.LAMBDA/np.sum(adj[-m:,:n],axis=0)
+        
         #get rid of nans and infs if we have any.
         ALPHA[np.isnan(ALPHA)] = 0
         ALPHA[ALPHA == -inf] = 0
+        ALPHA[ALPHA == inf] = 0
         BETA[np.isnan(BETA)] = 0
         BETA[BETA == -inf] = 0
+        BETA[BETA == inf] = 0
         GAMMA[np.isnan(GAMMA)] = 0
         GAMMA[GAMMA == -inf] = 0
+        GAMMA[GAMMA == inf] = 0
        
         S_ = self.LAMBDA * adj[-m:,:n]
         T_ = ALPHA * adj[:n,-m:] + BETA * adj2[:n,-m:] + GAMMA * adj3[:n,-m:]
