@@ -70,12 +70,16 @@ class Trimesh():
         BETA = 2*self.BETA/np.sum(adj2[-m:,:n],axis=1)
         GAMMA = 4*self.GAMMA/np.sum(adj3[-m:,:n],axis=1)
        
+        #get rid of nans and infs if we have any.
         ALPHA[np.isnan(ALPHA)] = 0
         ALPHA[ALPHA == -inf] = 0
+        ALPHA[ALPHA == inf] = 0
         BETA[np.isnan(BETA)] = 0
         BETA[BETA == -inf] = 0
+        BETA[BETA == inf] = 0
         GAMMA[np.isnan(GAMMA)] = 0
         GAMMA[GAMMA == -inf] = 0
+        GAMMA[GAMMA == inf] = 0
         
         S = self.LAMBDA * adj[-m:,:n]
         T = ALPHA * adj[:n,-m:] + BETA * adj2[:n,-m:] + GAMMA * adj3[:n,-m:]
@@ -106,6 +110,7 @@ class Trimesh():
         LAMBDA = 6*self.LAMBDA/np.sum(adj[-m:,:n],axis=0)
         
         #get rid of nans and infs if we have any.
+        
         ALPHA[np.isnan(ALPHA)] = 0
         ALPHA[ALPHA == -inf] = 0
         ALPHA[ALPHA == inf] = 0
@@ -115,6 +120,8 @@ class Trimesh():
         GAMMA[np.isnan(GAMMA)] = 0
         GAMMA[GAMMA == -inf] = 0
         GAMMA[GAMMA == inf] = 0
+        
+        BETA[GAMMA==0] += (4*self.GAMMA / (np.sum(adj2[-m:,:n],axis=1)[GAMMA==0])) #if there are no third neighbors, compensate by reweighting the second neighbors accordingly
        
         S_ = self.LAMBDA * adj[-m:,:n]
         T_ = ALPHA * adj[:n,-m:] + BETA * adj2[:n,-m:] + GAMMA * adj3[:n,-m:]
