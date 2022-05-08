@@ -1,5 +1,6 @@
 from trimesh import *
 import numpy as np 
+import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.offline as pyo
 from plotly.subplots import make_subplots
@@ -164,3 +165,54 @@ def weights3D(mesh, weights, name=''):
     fig.update_scenes(xaxis_visible=False, yaxis_visible=False,zaxis_visible=False )
 
     fig.show()
+    
+def PlotFilters(meshset):
+    fig, axs = plt.subplots(2,2,figsize=(10,10))
+    for mesh in (meshset):
+        plane = np.isclose(mesh.vertices[:,2],np.zeros(mesh.vertices[:,2].shape))
+        P,Q,A,B = mesh.filters
+        azimuth = np.arctan2(mesh.vertices[:,1],mesh.vertices[:,0])[plane].flatten()
+        sorts = np.argsort(azimuth)
+        axs[0,0].plot(azimuth[sorts],A[0,:][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
+
+        axs[0,1].plot(azimuth[sorts],B[0,:][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
+
+        axs[1,0].plot(azimuth[sorts],P[:,0][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
+
+        axs[1,1].plot(azimuth[sorts],Q[:,0][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
+
+    axs[0,0].set_title('First Row of A')
+    axs[0,1].set_title('First Row of B')
+    axs[1,0].set_title('First Column of P')
+    axs[1,1].set_title('First Column of Q')
+    axs[0,0].legend()
+    axs[0,1].legend()
+    axs[1,0].legend()
+    axs[1,1].legend()
+    fig.tight_layout()
+
+def PlotWavelets(instance):
+    fig, axs = plt.subplots(2,2,figsize=(15,15))
+    for i in range(0,instance.n):
+        mesh = instance.meshes[-1]
+        plane = np.isclose(mesh.vertices[:,2],np.zeros(mesh.vertices[:,2].shape))
+        phi,psi,dualphi,dualpsi = (instance.phis[i],instance.psis[i],instance.phi2s[i],instance.psi2s[i]) 
+        azimuth = np.arctan2(mesh.vertices[:,1],mesh.vertices[:,0])[plane].flatten()
+        sorts = np.argsort(azimuth)
+        axs[0,0].plot(azimuth[sorts],dualphi[0,:][plane].flatten()[sorts],'-',label=f'$\overline{{\phi^{i+1}_0}}$')
+
+        axs[0,1].plot(azimuth[sorts],dualpsi[0,:][plane].flatten()[sorts],'-',label=f'$\overline{{\psi^{i+1}_0}}$')
+
+        axs[1,0].plot(azimuth[sorts],phi[:,0][plane].flatten()[sorts],'-',label=f'$\phi^{i+1}_0$')
+
+        axs[1,1].plot(azimuth[sorts],psi[:,0][plane].flatten()[sorts],'-',label=f'$\psi^{i+1}_0$')
+
+    axs[0,0].set_title('horizontal section of dual scaling function, first row')
+    axs[0,1].set_title('horizontal section of dual wavelet, first row')
+    axs[1,0].set_title('horizontal section of scaling function, first column')
+    axs[1,1].set_title('horizontal section of wavelet, first column')
+    axs[0,0].legend()
+    axs[0,1].legend()
+    axs[1,0].legend()
+    axs[1,1].legend()
+    fig.tight_layout()

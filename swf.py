@@ -52,7 +52,7 @@ class SWF():
         self.psis = [self.psi(j) for j in range(self.n)]
         self.phi2s = [self.phi2(j) for j in range(self.n)]
         self.psi2s = [self.psi2(j) for j in range(self.n)]
-        
+    
     def phi(self,j):
         '''
         computes the direct scaling function as (P_n*...*P_j+2*P_j+1)
@@ -98,3 +98,7 @@ class SWF():
             result = A @ result
         result = self.Bs[j] @ result
         return result
+
+    def encode(self,data):
+        encoded = self.phi2s[0] @ data
+        return encoded
