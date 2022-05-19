@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 87.0, 1068.0, 701.0 ],
+		"rect" : [ 354.0, -614.0, 1068.0, 701.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -113,7 +113,7 @@
 					"numinlets" : 1,
 					"numoutlets" : 1,
 					"outlettype" : [ "signal" ],
-					"patching_rect" : [ 419.0, 133.5, 41.0, 22.0 ],
+					"patching_rect" : [ 419.0, 131.5, 41.0, 22.0 ],
 					"text" : "sig~ 1"
 				}
 
@@ -151,8 +151,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 33.0, 108.0, 171.0, 22.0 ],
-					"text" : "buffer~ playback encoded.wav"
+					"patching_rect" : [ 33.0, 108.0, 198.0, 22.0 ],
+					"text" : "buffer~ playback horizontalPan.wav"
 				}
 
 			}
