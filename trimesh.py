@@ -244,6 +244,45 @@ class Trimesh():
         new_filters = (P,Q,A,B)
 
         return Trimesh(new_vertices, new_faces, new_filters, self.level + 1, ALPHA=self.ALPHA, BETA=self.BETA, GAMMA=self.GAMMA, LAMBDA=self.LAMBDA)
+    
+    def closest_point_naive(self, points):
+        """
+        Given a list of points find the closest point
+        on any triangle.
+        Does this by constructing a very large intermediate array and
+        comparing every point to every triangle.
+        Parameters
+        ----------
+        points : (m, 3) float
+          Query points in space
+        Returns
+        ----------
+        closest : (m, 3) float
+          Closest point on triangles for each point
+        distance : (m,) float
+          Distances between point and triangle
+        triangle_id : (m,) int
+          Index of triangle containing closest point
+        """
+        # get triangles from mesh
+        triangles = self.vertices[self.faces]
+
+        # create a giant tiled array of each point tiled len(triangles) times
+        points_tiled = np.tile(points, (1, len(triangles)))
+        on_triangle = np.array([closest_point_corresponding(
+            triangles, i.reshape((-1, 3))) for i in points_tiled])
+
+        # distance squared
+        distance_2 = [((i - q)**2).sum(axis=1)
+                      for i, q in zip(on_triangle, points)]
+
+        triangle_id = np.array([i.argmin() for i in distance_2])
+
+        # closest cartesian point
+        closest = np.array([g[i] for i, g in zip(triangle_id, on_triangle)])
+        distance = np.array([g[i] for i, g in zip(triangle_id, distance_2)]) ** .5
+
+        return closest, distance, triangle_id
 
 if __name__ == "__main__":
     pass
