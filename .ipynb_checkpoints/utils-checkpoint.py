@@ -216,14 +216,12 @@ def PlotWavelets(instance):
     axs[1,0].legend()
     axs[1,1].legend()
     fig.tight_layout()
-    
+
 def closest_point_corresponding(triangles, points):
     """
     Return the closest point on the surface of each triangle for a
     list of corresponding points.
-    Implements the method from "Real Time Collision Detection" and
-    use the same variable names as "ClosestPtPointTriangle" to avoid
-    being any more confusing.
+    
     Parameters
     ----------
     triangles : (n, 3, 3) float
