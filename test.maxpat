@@ -151,8 +151,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 25.0, 85.0, 272.0, 22.0 ],
-					"text" : "buffer~ playback horizontalPanUnnormalized.wav"
+					"patching_rect" : [ 25.0, 85.0, 187.0, 22.0 ],
+					"text" : "buffer~ playback panHop100.wav"
 				}
 
 			}
