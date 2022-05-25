@@ -217,6 +217,11 @@ def PlotWavelets(instance):
     axs[1,1].legend()
     fig.tight_layout()
 
+def AreaTRI(TRI):
+    TR = TRI[:,1] - TRI[:,0] #get the TR vector of the triangle TRI
+    TI = TRI[:,2] - TRI[:,0] #get the TI vector of the triangle TRI
+    return np.linalg.norm(np.cross(TR,TI),axis=1)/2 #Area of the triangle TRI
+        
 def closest_point_corresponding(triangles, points):
     """
     Return the closest point on the surface of each triangle for a
