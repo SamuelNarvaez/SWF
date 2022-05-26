@@ -59,7 +59,7 @@ if __name__ == '__main__':
     layout704=np.array([[1,np.pi/6,np.pi/2],[1,-np.pi/6,np.pi/2],[1,0,np.pi/2],[1,np.pi/2,np.pi/2],[1,-np.pi/2,np.pi/2],[1,3*np.pi/4,np.pi/2],[1,-3*np.pi/4,np.pi/2],[1,np.pi/4,np.pi/4],[1,-np.pi/4,np.pi/4],[1,3*np.pi/4,np.pi/4],[1,-3*np.pi/4,np.pi/4]])
     vertices704 = np.apply_along_axis(lambda x: toCartesian(x),1,layout704)
     faces704 = np.array([[6,4,10],[10,4,8],[8,4,1],[8,1,2],[8,7,2],[7,2,0],[7,0,3],[7,3,9],[9,3,5],[10,7,9],[10,8,7],[10,6,5],[10,9,5]])
-
+    print('initializing model . . .')
     model = OptimalSWF(vertices704,faces704).model
     print('built model!')
     triangles = model.meshes[-1].vertices[model.meshes[-1].faces]
