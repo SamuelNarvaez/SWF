@@ -66,13 +66,14 @@ if __name__ == '__main__':
 
     while (quitFlag[0] is False):
         server.handle_request()
-        print(f"Received pos value {pos[0]}")
-        rad = np.radians(pos[0])
-        loc = toCartesian(np.hstack((1,rad)))
+        print(f"Received position value: {pos[0]}")
+        #rad = np.radians(pos[0])
+        #loc = toCartesian(np.hstack((1,rad)))
+        loc = pos[0].reshape((1,3))
         closest, dist, ind = model.meshes[-1].closest_point_naive(loc)
-        
-        PQR = triangles[ind] 
-        
+
+        PQR = triangles[ind]
+    
         AreaPQR = AreaTRI(PQR) #Area of PQR
 
         PQ = PQR[:,1] - PQR[:,0] #get the PQ vector of the triangle PQR
@@ -100,6 +101,6 @@ if __name__ == '__main__':
 
         # 3. Send Notes to pd (send pitch last to ensure syncing)
         py_to_pd_OscSender.send_message("/interpolation", (fine.reshape(-1).tolist()))
-        print('output sent!')
+        print(f'interpolating on triangle: {model.meshes[-1].faces[ind].reshape(-1)}')
 
     # ---------------------------------------------------------- #
