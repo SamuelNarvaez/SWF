@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 2656.0, 87.0, 1306.0, 908.0 ],
+		"rect" : [ 96.0, 87.0, 1306.0, 779.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -84,7 +84,6 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"assistshowspatchername" : 0,
-						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"format" : 6,
@@ -2930,7 +2929,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 278.0, 236.0, 152.0, 22.0 ],
-					"text" : "/position 1. -0. 0."
+					"text" : "/position 1. 0. 0."
 				}
 
 			}
