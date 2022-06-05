@@ -23,3 +23,12 @@ class OptimalSWF():
             return cost(model,1,1)
         else:
             return 100
+        
+    def pressure_at_point(self, point):
+        pass
+    def energy_at_point(self, point):
+        pass
+    def velocity_at_point(self, point):
+        pass
+    def intensity_at_point(self, point):
+        pass

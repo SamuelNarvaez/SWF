@@ -70,37 +70,10 @@ if __name__ == '__main__':
         #rad = np.radians(pos[0])
         #loc = toCartesian(np.hstack((1,rad)))
         loc = pos[0].reshape((1,3))
-        closest, dist, ind = model.meshes[-1].closest_point_naive(loc)
-
-        PQR = triangles[ind]
-    
-        AreaPQR = AreaTRI(PQR) #Area of PQR
-
-        PQ = PQR[:,1] - PQR[:,0] #get the PQ vector of the triangle PQR
-        PR = PQR[:,2] - PQR[:,0] #get the PR vector of the triangle PQR
-        normals = np.cross(PQ,PR) #get the normal vector for the plane defined by the triangle PQR
-        unitNormals = normals/np.linalg.norm(normals,axis=1).reshape(-1,1) #normal vector of unit length defined by PQR
-        scalarDist = np.sum(unitNormals*(loc-PQR[:,0,:]),axis=1) #scalar distance from panning point to plane along the normal
-        projection = loc - scalarDist.reshape(-1,1)*unitNormals #projection of panning point onto the plane defined by triangle PQR
-
-        S = projection.reshape(-1,1,3) #reshaped for use in the area calculations
-
-        SQR = np.hstack((S,PQR[:,1:,:])) #The triangle SQR defined by the panning point S and its two furthest neighbors
-        PSR = np.hstack((PQR[:,0,:].reshape(-1,1,3),S,PQR[:,2,:].reshape(-1,1,3))) #The triangle PSR defined by S and its closest and furthest neighbors
-        PQS = np.hstack((PQR[:,:2,:],S)) #The triangle PQS defined by S and its two closest neighbors
-
-        AreaSQR = AreaTRI(SQR) #area of SQR
-        AreaPSR = AreaTRI(PSR) #area of PSR
-        AreaPQS = AreaTRI(PQS) #area of PQS
-
-        interpolation = np.vstack((AreaSQR/AreaPQR,AreaPSR/AreaPQR,AreaPQS/AreaPQR)).T 
-        interpolation = interpolation/interpolation.sum(axis=1).reshape(-1,1)
-        
-        fine = np.zeros((model.meshes[-1].vertices.shape[0],1)) 
-        fine[model.meshes[-1].faces[ind]] = interpolation.reshape((1,3,1))
+        fine = model.interpolate(loc)
 
         # 3. Send Notes to pd (send pitch last to ensure syncing)
         py_to_pd_OscSender.send_message("/interpolation", (fine.reshape(-1).tolist()))
-        print(f'interpolating on triangle: {model.meshes[-1].faces[ind].reshape(-1)}')
+        print(f'interpolation: {fine[fine!=0]}')
 
     # ---------------------------------------------------------- #

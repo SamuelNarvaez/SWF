@@ -102,3 +102,40 @@ class SWF():
     def encode(self,data):
         encoded = self.phi2s[0] @ data
         return encoded
+    
+    def interpolate(self,loc):
+        '''
+        for a given point (loc), returns the triangular interpolation accross the three vertices of the nearest triangle PQR on the mesh. For a vertex P and a query point S, the interpolation weight for a vertex P is calculated as the area of the sub-triangle SQR divided by the total area of the triangle PQR. 
+        
+        '''
+        triangles = self.meshes[-1].vertices[self.meshes[-1].faces]
+        closest, dist, ind = self.meshes[-1].closest_point_naive(loc)
+
+        PQR = triangles[ind]
+    
+        AreaPQR = AreaTRI(PQR) #Area of PQR
+
+        PQ = PQR[:,1] - PQR[:,0] #get the PQ vector of the triangle PQR
+        PR = PQR[:,2] - PQR[:,0] #get the PR vector of the triangle PQR
+        normals = np.cross(PQ,PR) #get the normal vector for the plane defined by the triangle PQR
+        unitNormals = normals/np.linalg.norm(normals,axis=1).reshape(-1,1) #normal vector of unit length defined by PQR
+        scalarDist = np.sum(unitNormals*(loc-PQR[:,0,:]),axis=1) #scalar distance from panning point to plane along the normal
+        projection = loc - scalarDist.reshape(-1,1)*unitNormals #projection of panning point onto the plane defined by triangle PQR
+
+        S = projection.reshape(-1,1,3) #reshaped for use in the area calculations
+
+        SQR = np.hstack((S,PQR[:,1:,:])) #The triangle SQR defined by the panning point S and its two furthest neighbors
+        PSR = np.hstack((PQR[:,0,:].reshape(-1,1,3),S,PQR[:,2,:].reshape(-1,1,3))) #The triangle PSR defined by S and its closest and furthest neighbors
+        PQS = np.hstack((PQR[:,:2,:],S)) #The triangle PQS defined by S and its two closest neighbors
+
+        AreaSQR = AreaTRI(SQR) #area of SQR
+        AreaPSR = AreaTRI(PSR) #area of PSR
+        AreaPQS = AreaTRI(PQS) #area of PQS
+
+        interpolation = np.vstack((AreaSQR/AreaPQR,AreaPSR/AreaPQR,AreaPQS/AreaPQR)).T 
+        interpolation = interpolation/interpolation.sum(axis=1).reshape(-1,1)
+        
+        fine = np.zeros((self.meshes[-1].vertices.shape[0],1)) 
+        fine[self.meshes[-1].faces[ind]] = interpolation.reshape((1,3,1))
+        
+        return fine
