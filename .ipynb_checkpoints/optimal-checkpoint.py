@@ -17,18 +17,15 @@ class OptimalSWF():
     def f(self, coeffs):
         ALPHA, BETA = coeffs
         GAMMA = (1-2*(ALPHA+BETA))/4
-        if checkCoeffRelations(ALPHA,BETA,GAMMA):
-            mesh = Trimesh(self.vertices,self.faces,ALPHA=ALPHA,BETA=BETA,GAMMA=GAMMA)
-            model = SWF(mesh, n=3)
-            return cost(model,1,1)
-        else:
-            return 100
+        mesh = Trimesh(self.vertices,self.faces,ALPHA=ALPHA,BETA=BETA,GAMMA=GAMMA)
+        model = SWF(mesh, n=3)
+        return cost(model,1,1)
         
-    def pressure_at_point(self, point):
+    def total_acoustic_pressure(self, virtual_source_loc):
         pass
-    def energy_at_point(self, point):
+    def energy(self, virtual_source_loc):
         pass
-    def velocity_at_point(self, point):
+    def velocity(self, virtual_source_loc):
         pass
-    def intensity_at_point(self, point):
+    def intensity(self, virtual_source_loc):
         pass

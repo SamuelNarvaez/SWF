@@ -1,6 +1,8 @@
 import queue
 import time
 import random
+import fileinput
+import sys
 
 from trimesh import *
 from swf import *
@@ -62,6 +64,11 @@ if __name__ == '__main__':
     print('initializing model . . .')
     model = OptimalSWF(vertices704,faces704).model
     print('built model!')
+    encoder = model.phi2s[0]
+    np.savetxt('encoder.txt',encoder,newline=';\n')
+    for line in fileinput.input('encoder.txt',inplace=True):
+        sys.stdout.write('%d, %s'%(fileinput.filelineno(), line))
+    
     triangles = model.meshes[-1].vertices[model.meshes[-1].faces]
 
     while (quitFlag[0] is False):
