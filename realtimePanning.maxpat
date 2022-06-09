@@ -40,6 +40,68 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-30",
+					"lastchannelcount" : 12,
+					"maxclass" : "mc.live.gain~",
+					"numinlets" : 1,
+					"numoutlets" : 4,
+					"outlettype" : [ "multichannelsignal", "", "float", "list" ],
+					"parameter_enable" : 1,
+					"patching_rect" : [ 578.0, 801.833330512046814, 147.0, 141.0 ],
+					"saved_attribute_attributes" : 					{
+						"valueof" : 						{
+							"parameter_longname" : "mc.live.gain~[1]",
+							"parameter_mmax" : 6.0,
+							"parameter_mmin" : -70.0,
+							"parameter_shortname" : "mc.live.gain~[1]",
+							"parameter_type" : 0,
+							"parameter_unitstyle" : 4
+						}
+
+					}
+,
+					"varname" : "mc.live.gain~[1]"
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-29",
+					"linecount" : 9,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 216.0, 753.0, 150.0, 127.0 ],
+					"text" : "this object has erratic behavior at first, but if you run a horizontal and vertical pan through it once or twice, it starts to behave as expected. i'm still working on some way to send it the info it needs beforehand. "
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-27",
+					"linecount" : 7,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 70.0, 550.0, 150.0, 100.0 ],
+					"text" : "changing this might help with any clicks that the jitter event-based environment creates while using the patch, but 80ms latency tends to be pretty stable."
+				}
+
+			}
+, 			{
+				"box" : 				{
+					"id" : "obj-6",
+					"maxclass" : "newobj",
+					"numinlets" : 2,
+					"numoutlets" : 1,
+					"outlettype" : [ "multichannelsignal" ],
+					"patching_rect" : [ 374.0, 752.0, 97.0, 22.0 ],
+					"text" : "mc.normalize~ 1"
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-24",
 					"maxclass" : "message",
 					"numinlets" : 2,
@@ -877,7 +939,7 @@
 			}
 , 			{
 				"box" : 				{
-					"horizontaltracking" : 10.0,
+					"horizontaltracking" : 20.0,
 					"id" : "obj-5",
 					"maxclass" : "pictslider",
 					"numinlets" : 2,
@@ -887,7 +949,7 @@
 					"patching_rect" : [ 1057.0, 147.0, 100.0, 100.0 ],
 					"rightvalue" : 1270,
 					"topvalue" : 635,
-					"verticaltracking" : 5.0
+					"verticaltracking" : 10.0
 				}
 
 			}
@@ -966,9 +1028,13 @@
 , 			{
 				"box" : 				{
 					"centre_color" : [ 1.0, 1.0, 1.0, 0.04 ],
+					"constrain" : 5,
+					"draw_labels" : 0,
 					"grid_color" : [ 1.0, 1.0, 1.0, 0.1 ],
-					"grid_display" : 1,
+					"grid_display" : 3,
 					"id" : "obj-62",
+					"interpolation_time" : 80,
+					"interval" : 80,
 					"label_color" : [ 1.0, 1.0, 1.0, 0.5 ],
 					"maxclass" : "ambimonitor",
 					"mode" : 3,
@@ -980,7 +1046,7 @@
 					"patching_rect" : [ 549.0, 75.0, 488.0, 244.0 ],
 					"point_size" : 10.0,
 					"save_points" : 1,
-					"saved_points" : [ "1", 1, 0.983606557377043, 0.049515865287447, -0.000000000000002, 87.118098555139667, -0.000000000000116, 0.984852111045248, 0, 0.0, 0.0, 0.0, 0, 0 ],
+					"saved_points" : [ "1", 1, 0.99947105468393, -0.032446188802816, 0.002203561018867, 91.859360533981373, 0.126254848456312, 1.0, 0, 0.0, 0.0, 0.0, 0, 0 ],
 					"zoom_scale" : 0.925
 				}
 
@@ -3497,7 +3563,7 @@
 					"numoutlets" : 1,
 					"outlettype" : [ "" ],
 					"patching_rect" : [ 312.0, 236.0, 152.0, 35.0 ],
-					"text" : "/position 0.977457 -0.033845 0.211137"
+					"text" : "/position 0.999471 -0.032446 0.002204"
 				}
 
 			}
@@ -3522,7 +3588,7 @@
 					"numoutlets" : 4,
 					"outlettype" : [ "multichannelsignal", "", "float", "list" ],
 					"parameter_enable" : 1,
-					"patching_rect" : [ 374.0, 740.833330512046814, 198.0, 135.0 ],
+					"patching_rect" : [ 374.0, 801.833330512046814, 198.0, 135.0 ],
 					"saved_attribute_attributes" : 					{
 						"valueof" : 						{
 							"parameter_longname" : "mc.live.gain~",
@@ -3545,7 +3611,7 @@
 					"maxclass" : "mc.ezdac~",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 374.0, 883.833329319953918, 45.0, 45.0 ]
+					"patching_rect" : [ 374.0, 944.833329319953918, 45.0, 45.0 ]
 				}
 
 			}
@@ -4004,6 +4070,13 @@
 			}
 , 			{
 				"patchline" : 				{
+					"destination" : [ "obj-87", 0 ],
+					"source" : [ "obj-6", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
 					"destination" : [ "obj-14", 0 ],
 					"source" : [ "obj-62", 0 ]
 				}
@@ -4111,7 +4184,16 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-87", 0 ],
+					"destination" : [ "obj-30", 0 ],
+					"order" : 0,
+					"source" : [ "obj-67", 0 ]
+				}
+
+			}
+, 			{
+				"patchline" : 				{
+					"destination" : [ "obj-6", 0 ],
+					"order" : 1,
 					"source" : [ "obj-67", 0 ]
 				}
 
@@ -4187,6 +4269,7 @@
 			}
  ],
 		"parameters" : 		{
+			"obj-30" : [ "mc.live.gain~[1]", "mc.live.gain~[1]", 0 ],
 			"obj-54" : [ "LFE", "LFE", 0 ],
 			"obj-87" : [ "mc.live.gain~", "mc.live.gain~", 0 ],
 			"parameterbanks" : 			{

@@ -5,9 +5,10 @@ from utils import *
 from scipy.optimize import minimize
 
 class OptimalSWF():
-    def __init__(self, vertices, faces):
+    def __init__(self, vertices, faces, level_to_optimize=0):
         self.vertices = vertices
         self.faces = faces
+        self.level_to_optimize = level_to_optimize
         initial_guess = np.array([0.5,0])
         res = minimize(self.f,initial_guess)
         a,b = res.x
@@ -19,7 +20,7 @@ class OptimalSWF():
         GAMMA = (1-2*(ALPHA+BETA))/4
         mesh = Trimesh(self.vertices,self.faces,ALPHA=ALPHA,BETA=BETA,GAMMA=GAMMA)
         model = SWF(mesh, n=3)
-        return cost(model,1,1)
+        return cost(model,self.level_to_optimize,1,1)
         
     def total_acoustic_pressure(self, virtual_source_loc):
         pass

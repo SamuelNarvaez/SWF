@@ -63,7 +63,7 @@ def get_third_neighbors(adj):
     
     return third
 
-def cost(SWF,wl,wt):
+def cost(SWF,level_to_optimize=0,wl,wt):
     '''
     Given a SWF defined over some mesh with some lifting coefficients, compute the acoustic pressure, longitudinal velocity, and 
     transverse velocity and compute a cost using these values.
@@ -81,14 +81,19 @@ def cost(SWF,wl,wt):
     cost : int
           cost value
     '''
+    encoder = SWF.phi2s[level_to_optimize]
+    if level_to_optimize == 0:
+        opt_level_vertices = SWF.base.vertices
+    else:
+        opt_level_vertices = SWF.meshes[level_to_optimize-1].vertices
     N = SWF.meshes[-1].vertices.shape[0]
     E = np.zeros([N,1])
     for i in range(N):
         onesource = np.zeros([N,1])
         onesource[i] = 1
         ui = SWF.meshes[-1].vertices[i]
-        c0 = SWF.phi2s[0]@onesource
-        V_ = np.sum(c0 * SWF.base.vertices,axis=0)#velocity vector for each vertex
+        c0 = encoder@onesource
+        V_ = np.sum(c0 * opt_level_vertices,axis=0)#velocity vector for each vertex
         Vl = np.sum(V_ * ui)
         Vt = np.linalg.norm(np.cross(V_,ui))
         Ei = wl*((Vl-1)**2) + wt*(Vt**2) #the cost as computed for a source at vertex i
