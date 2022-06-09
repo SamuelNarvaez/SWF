@@ -63,7 +63,7 @@ def get_third_neighbors(adj):
     
     return third
 
-def cost(SWF,level_to_optimize=0,wl,wt):
+def cost(SWF,wl,wt,level_to_optimize=0):
     '''
     Given a SWF defined over some mesh with some lifting coefficients, compute the acoustic pressure, longitudinal velocity, and 
     transverse velocity and compute a cost using these values.
