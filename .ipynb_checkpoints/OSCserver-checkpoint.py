@@ -8,6 +8,8 @@ from trimesh import *
 from swf import *
 from optimal import *
 from utils import *
+from constants import *
+
 import numpy as np
 import soundfile as sf
 from scipy import spatial
@@ -58,13 +60,27 @@ if __name__ == '__main__':
     # ---------------------------------------------------------- #
 
     # ------------------ Interpolation GENERATION  ------------------ #
-    layout704=np.array([[1,np.pi/6,np.pi/2],[1,-np.pi/6,np.pi/2],[1,0,np.pi/2],[1,np.pi/2,np.pi/2],[1,-np.pi/2,np.pi/2],[1,3*np.pi/4,np.pi/2],[1,-3*np.pi/4,np.pi/2],[1,np.pi/4,np.pi/4],[1,-np.pi/4,np.pi/4],[1,3*np.pi/4,np.pi/4],[1,-3*np.pi/4,np.pi/4]])
-    vertices704 = np.apply_along_axis(lambda x: toCartesian(x),1,layout704)
-    faces704 = np.array([[6,4,10],[10,4,8],[8,4,1],[8,1,2],[8,7,2],[7,2,0],[7,0,3],[7,3,9],[9,3,5],[10,7,9],[10,8,7],[10,6,5],[10,9,5]])
     print('initializing model . . .')
-    model = OptimalSWF(vertices704,faces704).model
-    print('built model!')
+    '''
+    #for the subdivision mesh based on 7.0.4
+    model = OptimalSWF(vertices704,faces704).model 
     encoder = model.phi2s[0]
+    '''
+    
+    #for the transcoding mesh
+    key = transcoding_precomputed_coeffs
+    base = Trimesh(v_3_0,f_3_0,ALPHA=key[0][0],BETA=key[0][1],GAMMA=key[0][2])
+    first = base.manual_subdivide(v_5_0,f_5_0,ALPHA=key[1][0],BETA=key[1][1],GAMMA=key[1][2])
+    second = first.manual_subdivide(v_5_2,f_5_2,ALPHA=key[2][0],BETA=key[2][1],GAMMA=key[2][2])
+    third = second.manual_subdivide(v_7_4,f_7_4,ALPHA=key[3][0],BETA=key[3][1],GAMMA=key[3][2])
+    fourth = third.manual_subdivide(v_9_6,f_9_6,ALPHA=key[4][0],BETA=key[4][1],GAMMA=key[4][2])
+    fifth = fourth.manual_subdivide(v_11_8,f_11_8,ALPHA=key[5][0],BETA=key[5][1],GAMMA=key[5][2])
+    opt_meshset = [first,second,third,fourth,fifth]
+    model = SWF(base,meshset=opt_meshset)
+    encoder = model.phi2s[3]
+    
+    print('built model!')
+    
     np.savetxt('encoder.txt',encoder,newline=';\n')
     for line in fileinput.input('encoder.txt',inplace=True):
         sys.stdout.write('%d, %s'%(fileinput.filelineno(), line))
