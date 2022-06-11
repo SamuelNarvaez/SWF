@@ -195,7 +195,7 @@ def PlotFilters(meshset):
     axs[1,1].legend()
     fig.tight_layout()
 
-def PlotWavelets(SWF):
+def PlotWavelets(SWF,idx=0):
     fig, axs = plt.subplots(2,2,figsize=(15,15))
     for i in range(0,SWF.n):
         mesh = SWF.meshes[-1]
@@ -203,13 +203,13 @@ def PlotWavelets(SWF):
         phi,psi,dualphi,dualpsi = (SWF.phis[i],SWF.psis[i],SWF.phi2s[i],SWF.psi2s[i]) 
         azimuth = np.arctan2(mesh.vertices[:,1],mesh.vertices[:,0])[plane].flatten()
         sorts = np.argsort(azimuth)
-        axs[0,0].plot(azimuth[sorts],dualphi[0,:][plane].flatten()[sorts],'-',label=f'$\overline{{\phi^{i+1}_0}}$')
+        axs[0,0].plot(azimuth[sorts],dualphi[idx,:][plane].flatten()[sorts],'-',label=f'$\overline{{\phi^{i+1}_{idx}}}$')
 
-        axs[0,1].plot(azimuth[sorts],dualpsi[0,:][plane].flatten()[sorts],'-',label=f'$\overline{{\psi^{i+1}_0}}$')
+        axs[0,1].plot(azimuth[sorts],dualpsi[idx,:][plane].flatten()[sorts],'-',label=f'$\overline{{\psi^{i+1}_{idx}}}$')
 
-        axs[1,0].plot(azimuth[sorts],phi[:,0][plane].flatten()[sorts],'-',label=f'$\phi^{i+1}_0$')
+        axs[1,0].plot(azimuth[sorts],phi[:,idx][plane].flatten()[sorts],'-',label=f'$\phi^{i+1}_{idx}$')
 
-        axs[1,1].plot(azimuth[sorts],psi[:,0][plane].flatten()[sorts],'-',label=f'$\psi^{i+1}_0$')
+        axs[1,1].plot(azimuth[sorts],psi[:,idx][plane].flatten()[sorts],'-',label=f'$\psi^{i+1}_{idx}$')
 
     axs[0,0].set_title('horizontal section of dual scaling function, first row')
     axs[0,1].set_title('horizontal section of dual wavelet, first row')

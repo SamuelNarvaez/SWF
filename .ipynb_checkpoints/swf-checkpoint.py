@@ -99,8 +99,8 @@ class SWF():
         result = self.Bs[j] @ result
         return result
 
-    def encode(self,data):
-        encoded = self.phi2s[0] @ data
+    def encode(self,data,truncation_level=0):
+        encoded = self.phi2s[truncation_level] @ data
         return encoded
     
     def interpolate(self,loc):
