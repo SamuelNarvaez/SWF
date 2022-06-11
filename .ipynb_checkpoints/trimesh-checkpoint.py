@@ -46,7 +46,7 @@ class Trimesh():
         
         #set lifting parameters
         
-        if checkCoeffRelations(ALPHA,BETA,GAMMA):
+        if checkRelation(ALPHA,BETA,GAMMA):
             self.ALPHA = ALPHA
             self.BETA = BETA
             self.GAMMA = GAMMA

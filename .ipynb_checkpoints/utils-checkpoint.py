@@ -1,9 +1,11 @@
-from trimesh import *
 import numpy as np 
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
 import plotly.offline as pyo
 from plotly.subplots import make_subplots
+
+def checkRelation(a,b,c):
+    return np.isclose(2*a + 2*b + 4*c, 1)
 
 def faces_to_edges(faces, return_index=False):
     """
@@ -100,9 +102,6 @@ def cost(SWF,wl,wt,level_to_optimize=0):
         E[i]=Ei
     cost = np.sum(E)/N
     return cost
-
-def checkCoeffRelations(a,b,c):
-    return np.isclose(2*a + 2*b + 4*c, 1)
 
 def check_sum_to_1(mat,axis):
     return np.isclose(np.sum(mat,axis=axis),np.ones(mat.shape[(axis+1)%2]))
