@@ -195,12 +195,12 @@ def PlotFilters(meshset):
     axs[1,1].legend()
     fig.tight_layout()
 
-def PlotWavelets(instance):
+def PlotWavelets(SWF):
     fig, axs = plt.subplots(2,2,figsize=(15,15))
-    for i in range(0,instance.n):
-        mesh = instance.meshes[-1]
+    for i in range(0,SWF.n):
+        mesh = SWF.meshes[-1]
         plane = np.isclose(mesh.vertices[:,2],np.zeros(mesh.vertices[:,2].shape))
-        phi,psi,dualphi,dualpsi = (instance.phis[i],instance.psis[i],instance.phi2s[i],instance.psi2s[i]) 
+        phi,psi,dualphi,dualpsi = (SWF.phis[i],SWF.psis[i],SWF.phi2s[i],SWF.psi2s[i]) 
         azimuth = np.arctan2(mesh.vertices[:,1],mesh.vertices[:,0])[plane].flatten()
         sorts = np.argsort(azimuth)
         axs[0,0].plot(azimuth[sorts],dualphi[0,:][plane].flatten()[sorts],'-',label=f'$\overline{{\phi^{i+1}_0}}$')

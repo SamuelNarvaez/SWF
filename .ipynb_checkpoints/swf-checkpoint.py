@@ -11,7 +11,7 @@ verticesOCT = np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])
 facesOCT = np.array([[1,2,4],[1,3,4],[3,0,4],[0,2,4],[1,3,5],[3,0,5],[0,2,5],[2,1,5]])
 
 class SWF():
-    def __init__(self,base='oct',n=3,l=0):
+    def __init__(self,base='oct',n=3,l=0,meshset=None):
         '''
         base : string or Trimesh 
             string points to some predefined base mesh
@@ -37,10 +37,16 @@ class SWF():
         else: 
             self.base = base
         self.n = int(n)
+        if meshset is not None:
+            self.n += len(meshset)
         self.l = int(l)
         self.meshes = []
-        current = self.base
-        for i in range(self.n):
+        if meshset is not None:
+            self.meshes = meshset
+            current = self.meshes[-1]
+        else:
+            current = self.base
+        for i in range(int(n)):
             result = current.subdivide()
             self.meshes.append(result)
             current = result
