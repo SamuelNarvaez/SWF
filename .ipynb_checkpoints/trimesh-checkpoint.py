@@ -137,7 +137,7 @@ class Trimesh():
         
         return P,Q,A,B
 
-    def subdivide(self, project_to_sphere = True, modified = True):
+    def subdivide(self, project_to_sphere = True, modified = True, ALPHA=None,BETA=None,GAMMA=None,LAMBDA=None):
         """
         Subdivide a mesh into smaller triangles,
         Carry out one iteration of lifting scheme on the 
@@ -158,6 +158,14 @@ class Trimesh():
         ----------
         New subdivided trimesh object
         """
+        if ALPHA is not None:
+            self.ALPHA = ALPHA
+        if BETA is not None:
+            self.BETA = BETA
+        if GAMMA is not None:
+            self.GAMMA = GAMMA
+        if LAMBDA is not None:
+            self.LAMBDA = LAMBDA
         
         face_index = np.arange(len(self.faces))
 
@@ -245,7 +253,7 @@ class Trimesh():
 
         return Trimesh(new_vertices, new_faces, new_filters, self.level + 1, ALPHA=self.ALPHA, BETA=self.BETA, GAMMA=self.GAMMA, LAMBDA=self.LAMBDA)
     
-    def manual_subdivide(self, new_vertices, new_faces, project_to_sphere = True, modified = True):
+    def manual_subdivide(self, new_vertices, new_faces, project_to_sphere = True, modified = True, ALPHA=None,BETA=None,GAMMA=None,LAMBDA=None):
         """
         Lets a user specify the next "level" of mesh manually. This should only really be used with extreme caution, as it is neccessary to include all the vertices of the base mesh in the next level. 
         
@@ -263,7 +271,14 @@ class Trimesh():
         ----------
         New subdivided trimesh object
         """
-        
+        if ALPHA is not None:
+            self.ALPHA = ALPHA
+        if BETA is not None:
+            self.BETA = BETA
+        if GAMMA is not None:
+            self.GAMMA = GAMMA
+        if LAMBDA is not None:
+            self.LAMBDA = LAMBDA
          #turn new vertices into unit vectors w.r.t. the origin
         if project_to_sphere:
             new_vertices = new_vertices/np.linalg.norm(new_vertices,axis=1).reshape(-1,1)

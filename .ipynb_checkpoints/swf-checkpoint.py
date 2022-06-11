@@ -11,7 +11,7 @@ verticesOCT = np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])
 facesOCT = np.array([[1,2,4],[1,3,4],[3,0,4],[0,2,4],[1,3,5],[3,0,5],[0,2,5],[2,1,5]])
 
 class SWF():
-    def __init__(self,base='oct',n=3,l=0,meshset=None):
+    def __init__(self,base='oct',n=3,meshset=None):
         '''
         base : string or Trimesh 
             string points to some predefined base mesh
@@ -19,8 +19,9 @@ class SWF():
         
         n : int
             finest mesh subdivision level
-        l : int
-            truncation level
+        meshset : iterable (optional)
+            If, for example, you had a particular set of manually subdivided meshes that were compatible, they could be provided 
+            here instead of generating the subdivisions automatically. It is important to note that n subdivisions will still occur. If this is not taken into account, it could result in a long runtime if you provide a relatively dense mesh in the meshset.
         
         '''
         presets = {'OCT': 
@@ -39,7 +40,7 @@ class SWF():
         self.n = int(n)
         if meshset is not None:
             self.n += len(meshset)
-        self.l = int(l)
+
         self.meshes = []
         if meshset is not None:
             self.meshes = meshset

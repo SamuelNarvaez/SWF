@@ -40,6 +40,18 @@
 		"assistshowspatchername" : 0,
 		"boxes" : [ 			{
 				"box" : 				{
+					"id" : "obj-26",
+					"linecount" : 9,
+					"maxclass" : "comment",
+					"numinlets" : 1,
+					"numoutlets" : 0,
+					"patching_rect" : [ 520.0, 565.0, 150.0, 127.0 ],
+					"text" : ": : : IMPORTANT : : :\nthis patch assumes a 7.1.4 layout, and significant changes to the channelMagic subpatch will have to be made depending on your expected reproduction layout."
+				}
+
+			}
+, 			{
+				"box" : 				{
 					"id" : "obj-30",
 					"lastchannelcount" : 12,
 					"maxclass" : "mc.live.gain~",
@@ -83,7 +95,7 @@
 					"maxclass" : "comment",
 					"numinlets" : 1,
 					"numoutlets" : 0,
-					"patching_rect" : [ 70.0, 550.0, 150.0, 100.0 ],
+					"patching_rect" : [ 70.0, 550.0, 151.0, 100.0 ],
 					"text" : "changing this might help with any clicks that the jitter event-based environment creates while using the patch, but 80ms latency tends to be pretty stable."
 				}
 
