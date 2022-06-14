@@ -10,7 +10,7 @@
 		}
 ,
 		"classnamespace" : "box",
-		"rect" : [ 34.0, 87.0, 1372.0, 778.0 ],
+		"rect" : [ 2432.0, 87.0, 1147.0, 1006.0 ],
 		"bglocked" : 0,
 		"openinpresentation" : 0,
 		"default_fontsize" : 12.0,
@@ -120,7 +120,7 @@
 						}
 ,
 						"classnamespace" : "box",
-						"rect" : [ 397.0, 109.0, 653.0, 616.0 ],
+						"rect" : [ 1706.0, 87.0, 653.0, 616.0 ],
 						"bglocked" : 0,
 						"openinpresentation" : 0,
 						"default_fontsize" : 12.0,
@@ -148,6 +148,7 @@
 						"style" : "",
 						"subpatcher_template" : "",
 						"assistshowspatchername" : 0,
+						"visible" : 1,
 						"boxes" : [ 							{
 								"box" : 								{
 									"id" : "obj-10",
@@ -3293,18 +3294,6 @@
 			}
 , 			{
 				"box" : 				{
-					"id" : "obj-40",
-					"maxclass" : "ezdac~",
-					"numinlets" : 2,
-					"numoutlets" : 0,
-					"patching_rect" : [ 96.0, 162.424866000000009, 45.0, 45.0 ],
-					"presentation" : 1,
-					"presentation_rect" : [ 402.500000238418579, 44.394530999999915, 45.0, 45.0 ]
-				}
-
-			}
-, 			{
-				"box" : 				{
 					"id" : "obj-37",
 					"maxclass" : "newobj",
 					"numinlets" : 1,
@@ -3334,8 +3323,8 @@
 					"numinlets" : 1,
 					"numoutlets" : 2,
 					"outlettype" : [ "float", "bang" ],
-					"patching_rect" : [ 143.0, 186.0, 183.0, 22.0 ],
-					"text" : "buffer~ buf LaBellaMurciana.wav"
+					"patching_rect" : [ 143.0, 186.0, 126.0, 22.0 ],
+					"text" : "buffer~ buf bossa.wav"
 				}
 
 			}
@@ -3674,16 +3663,17 @@
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-40", 0 ],
-					"order" : 0,
+					"destination" : [ "obj-58", 0 ],
+					"order" : 1,
 					"source" : [ "obj-66", 0 ]
 				}
 
 			}
 , 			{
 				"patchline" : 				{
-					"destination" : [ "obj-58", 0 ],
-					"order" : 1,
+					"destination" : [ "obj-86", 0 ],
+					"midpoints" : [ 48.5, 222.0, 24.0, 222.0, 24.0, 804.0, 179.000000238418579, 804.0 ],
+					"order" : 0,
 					"source" : [ "obj-66", 0 ]
 				}
 

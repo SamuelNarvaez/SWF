@@ -61,12 +61,12 @@ if __name__ == '__main__':
 
     # ------------------ Interpolation GENERATION  ------------------ #
     print('initializing model . . .')
-    '''
+    
     #for the subdivision mesh based on 7.0.4
     model = OptimalSWF(vertices704,faces704).model 
     encoder = model.phi2s[0]
-    '''
     
+    '''
     #for the transcoding mesh
     key = transcoding_precomputed_coeffs
     base = Trimesh(v_3_0,f_3_0,ALPHA=key[0][0],BETA=key[0][1],GAMMA=key[0][2])
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     opt_meshset = [first,second,third,fourth,fifth]
     model = SWF(base,meshset=opt_meshset)
     encoder = model.phi2s[3]
-    
+    '''
     print('built model!')
     
     np.savetxt('encoder.txt',encoder,newline=';\n')
