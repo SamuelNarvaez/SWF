@@ -67,7 +67,7 @@ if __name__ == '__main__':
     if method == '704base':
         print('704base')
         #for the subdivision mesh based on 7.0.4
-        model = OptimalSWF(vertices704,faces704).model 
+        model = OptimalSWF(vertices704,faces704,2).model 
         encoder = model.phi2s[0]
     
     elif method == 'transcoding':
