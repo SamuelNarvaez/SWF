@@ -62,23 +62,28 @@ if __name__ == '__main__':
     # ------------------ Interpolation GENERATION  ------------------ #
     print('initializing model . . .')
     
-    #for the subdivision mesh based on 7.0.4
-    model = OptimalSWF(vertices704,faces704).model 
-    encoder = model.phi2s[0]
+    method = sys.argv[1]
     
-    '''
-    #for the transcoding mesh
-    key = transcoding_precomputed_coeffs
-    base = Trimesh(v_3_0,f_3_0,ALPHA=key[0][0],BETA=key[0][1],GAMMA=key[0][2])
-    first = base.manual_subdivide(v_5_0,f_5_0,ALPHA=key[1][0],BETA=key[1][1],GAMMA=key[1][2])
-    second = first.manual_subdivide(v_5_2,f_5_2,ALPHA=key[2][0],BETA=key[2][1],GAMMA=key[2][2])
-    third = second.manual_subdivide(v_7_4,f_7_4,ALPHA=key[3][0],BETA=key[3][1],GAMMA=key[3][2])
-    fourth = third.manual_subdivide(v_9_6,f_9_6,ALPHA=key[4][0],BETA=key[4][1],GAMMA=key[4][2])
-    fifth = fourth.manual_subdivide(v_11_8,f_11_8,ALPHA=key[5][0],BETA=key[5][1],GAMMA=key[5][2])
-    opt_meshset = [first,second,third,fourth,fifth]
-    model = SWF(base,meshset=opt_meshset)
-    encoder = model.phi2s[3]
-    '''
+    if method == '704base':
+        print('704base')
+        #for the subdivision mesh based on 7.0.4
+        model = OptimalSWF(vertices704,faces704).model 
+        encoder = model.phi2s[0]
+    
+    elif method == 'transcoding':
+        print(f'transcoding {sys.argv[2]}')
+        #for the transcoding mesh
+        key = transcoding_precomputed_coeffs
+        base = Trimesh(v_3_0,f_3_0,ALPHA=key[0][0],BETA=key[0][1],GAMMA=key[0][2])
+        first = base.manual_subdivide(v_5_0,f_5_0,ALPHA=key[1][0],BETA=key[1][1],GAMMA=key[1][2])
+        second = first.manual_subdivide(v_5_2,f_5_2,ALPHA=key[2][0],BETA=key[2][1],GAMMA=key[2][2])
+        third = second.manual_subdivide(v_7_4,f_7_4,ALPHA=key[3][0],BETA=key[3][1],GAMMA=key[3][2])
+        fourth = third.manual_subdivide(v_9_6,f_9_6,ALPHA=key[4][0],BETA=key[4][1],GAMMA=key[4][2])
+        fifth = fourth.manual_subdivide(v_11_8,f_11_8,ALPHA=key[5][0],BETA=key[5][1],GAMMA=key[5][2])
+        opt_meshset = [first,second,third,fourth,fifth]
+        model = SWF(base,2,meshset=opt_meshset)
+        encoder = model.phi2s[int(sys.argv[2])]
+    
     print('built model!')
     
     np.savetxt('encoder.txt',encoder,newline=';\n')
