@@ -96,6 +96,7 @@ class SWF():
         for a given point (loc), returns the triangular interpolation accross the three vertices of the nearest triangle PQR on the mesh. For a vertex P and a query point S, the interpolation weight for a vertex P is calculated as the area of the sub-triangle SQR divided by the total area of the triangle PQR. 
         
         '''
+        loc = loc.reshape((-1,3))
         triangles = self.meshes[-1].vertices[self.meshes[-1].faces]
         closest, dist, ind = self.meshes[-1].closest_point_naive(loc)
 
