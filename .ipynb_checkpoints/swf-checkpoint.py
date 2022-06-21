@@ -128,11 +128,43 @@ class SWF():
         
         return fine
     
-    def total_acoustic_pressure(self, virtual_source_loc):
-        pass
-    def energy(self, virtual_source_loc):
-        pass
-    def velocity(self, virtual_source_loc):
-        pass
-    def intensity(self, virtual_source_loc):
-        pass
+    def total_acoustic_pressure(self, virtual_source_loc,truncation_level=0):
+        
+        fine = self.interpolate(virtual_source_loc)
+        coarse = self.encode(fine,truncation_level)
+        
+        return np.sum(coarse)
+    
+    def energy(self, virtual_source_loc,truncation_level=0):
+        
+        fine = self.interpolate(virtual_source_loc)
+        coarse = self.encode(fine,truncation_level)
+        return np.sum(np.absolute(coarse)**2)
+    
+    def velocity(self, virtual_source_loc,truncation_level=0):
+        
+        if truncation_level == 0:
+            trunc_level_vertices = self.base.vertices
+        else:
+            trunc_level_vertices = self.meshes[truncation_level-1].vertices
+        
+        fine = self.interpolate(virtual_source_loc)
+        coarse = self.encode(fine,truncation_level)
+        V_ = np.sum(coarse * trunc_level_vertices,axis=0)#velocity vector for each vertex
+        Vl = np.sum(V_ * virtual_source_loc)
+        Vt = np.linalg.norm(np.cross(V_,virtual_source_loc))
+        return Vl,Vt
+    
+    def intensity(self, virtual_source_loc,truncation_level=0):
+        
+        if truncation_level == 0:
+            trunc_level_vertices = self.base.vertices
+        else:
+            trunc_level_vertices = self.meshes[truncation_level-1].vertices
+        
+        fine = self.interpolate(virtual_source_loc)
+        coarse = self.encode(fine,truncation_level)
+        I_ = np.sum((np.absolute(coarse)**2 * trunc_level_vertices)/self.energy(virtual_source_loc,truncation_level),axis=0)#velocity vector for each vertex
+        Il = np.sum(I_ * virtual_source_loc)
+        It = np.linalg.norm(np.cross(I_,virtual_source_loc))
+        return Il,It
