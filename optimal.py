@@ -22,12 +22,3 @@ class OptimalSWF():
         mesh = Trimesh(self.vertices,self.faces,ALPHA=ALPHA,BETA=BETA,GAMMA=GAMMA)
         model = SWF(mesh, n=self.n)
         return cost(model,1,1,self.level_to_optimize)
-        
-    def total_acoustic_pressure(self, virtual_source_loc):
-        pass
-    def energy(self, virtual_source_loc):
-        pass
-    def velocity(self, virtual_source_loc):
-        pass
-    def intensity(self, virtual_source_loc):
-        pass

@@ -4,9 +4,9 @@ from utils import *
 from constants import *
 
 class SWF():
-    def __init__(self,base='oct',n=3,meshset=None):
+    def __init__(self,base,n=3,meshset=None):
         '''
-        base : string or Trimesh 
+        base : Trimesh 
             string points to some predefined base mesh
             Trimesh sets the base mesh manually
         
@@ -17,19 +17,7 @@ class SWF():
             here instead of generating the subdivisions automatically. It is important to note that n subdivisions will still occur. If this is not taken into account, it could result in a long runtime if you provide a relatively dense mesh in the meshset.
         
         '''
-        presets = {'OCT': 
-                   Trimesh(verticesOCT,facesOCT,ALPHA=0.609151,BETA=-0.015081,GAMMA=-0.047035),
-                   '7.0.4':
-                   Trimesh(vertices704,faces704,ALPHA=0.546418,BETA=0.036781,GAMMA=-0.0416),
-                   '3.0.1':
-                   Trimesh(vertices301,faces301,ALPHA=0.599363,BETA=0.033933,GAMMA=-0.066648),
-                   #'5.1.4':
-                   #Trimesh(ALPHA=1/2,BETA=1/8,GAMMA=-1/16),
-                   }
-        if type(base) is str:
-            self.base = presets[base]
-        else: 
-            self.base = base
+        self.base = base
         self.n = int(n)
         if meshset is not None:
             self.n += len(meshset)
@@ -139,3 +127,12 @@ class SWF():
         fine[self.meshes[-1].faces[ind]] = interpolation.reshape((1,3,1))
         
         return fine
+    
+    def total_acoustic_pressure(self, virtual_source_loc):
+        pass
+    def energy(self, virtual_source_loc):
+        pass
+    def velocity(self, virtual_source_loc):
+        pass
+    def intensity(self, virtual_source_loc):
+        pass
