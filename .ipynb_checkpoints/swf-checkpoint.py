@@ -133,6 +133,7 @@ class SWF():
         
         fine = self.interpolate(virtual_source_loc)
         coarse = self.encode(fine,truncation_level)
+        coarse = coarse / np.sqrt(np.sum(coarse**2)) #g' = g/sqrt(sum(g^2)) normalize to have unit energy 
         
         return np.sum(coarse)
     
@@ -140,6 +141,8 @@ class SWF():
         
         fine = self.interpolate(virtual_source_loc)
         coarse = self.encode(fine,truncation_level)
+        coarse = coarse / np.sqrt(np.sum(coarse**2)) #g' = g/sqrt(sum(g^2)) normalize to have unit energy 
+        
         return np.sum(np.absolute(coarse)**2)
     
     def velocity(self, virtual_source_loc,truncation_level=0):
@@ -151,6 +154,8 @@ class SWF():
         
         fine = self.interpolate(virtual_source_loc)
         coarse = self.encode(fine,truncation_level)
+        coarse = coarse / np.sqrt(np.sum(coarse**2)) #g' = g/sqrt(sum(g^2)) normalize to have unit energy 
+        
         V_ = np.sum(coarse * trunc_level_vertices,axis=0)#velocity vector for each vertex
         Vl = np.sum(V_ * virtual_source_loc)
         Vt = np.linalg.norm(np.cross(V_,virtual_source_loc))
@@ -165,6 +170,8 @@ class SWF():
         
         fine = self.interpolate(virtual_source_loc)
         coarse = self.encode(fine,truncation_level)
+        coarse = coarse / np.sqrt(np.sum(coarse**2)) #g' = g/sqrt(sum(g^2)) normalize to have unit energy 
+        
         I_ = np.sum((np.absolute(coarse)**2 * trunc_level_vertices)/self.energy(virtual_source_loc,truncation_level),axis=0)#velocity vector for each vertex
         Il = np.sum(I_ * virtual_source_loc)
         It = np.linalg.norm(np.cross(I_,virtual_source_loc))
