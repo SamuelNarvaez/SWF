@@ -5,6 +5,17 @@ import plotly.offline as pyo
 from plotly.subplots import make_subplots
 
 def checkRelation(a,b,c):
+    """
+    Given three parameters: a,b,c check that they satisfy 2a + 2b + 4c == 1
+    -----------
+    a : float
+    b : float
+    c : float
+    
+    Returns
+    -----------
+    bool 
+    """
     return np.isclose(2*a + 2*b + 4*c, 1)
 
 def faces_to_edges(faces, return_index=False):
@@ -104,15 +115,55 @@ def cost(SWF,wl,wt,level_to_optimize=0):
     return cost
 
 def check_sum_to_1(mat,axis):
+    """
+    Given a matrix, check that the sum is 1 along axis
+    
+    Parameters
+    -----------
+    mat : np.array
+      matrix that we want to check sums to one along some axis
+    axis : int
+      axis along which to sum
+    Returns
+    -----------
+    bool
+    """
     return np.isclose(np.sum(mat,axis=axis),np.ones(mat.shape[(axis+1)%2]))
 
 def toCartesian(point):
+    """
+    Given a point in spherical coordinates, convert to cartesian
+    
+    Parameters
+    -----------
+    point : np.array(r,a,e)
+      radius, azimuth, elevation
+    Returns
+    -----------
+    np.array(x,y,z)
+    
+    """
     x = point[0]*np.cos(point[1])*np.sin(point[2])
     y = point[0]*np.sin(point[1])*np.sin(point[2])
     z = point[0]*np.cos(point[2])
     return np.array([x,y,z])
 
 def weights3D(mesh, weights, name=''):  
+    """
+    plot weights over the vertices of a mesh
+    
+    Parameters
+    -----------
+    mesh : Trimesh
+      the mesh over which to plot
+    weights : np.arr
+      array of weights, same length as vertices in the mesh 
+      
+    Returns
+    -----------
+    plotly fig
+    
+    """
     x = mesh.vertices[:,0]
     y = mesh.vertices[:,1]
     z = mesh.vertices[:,2]
@@ -171,6 +222,19 @@ def weights3D(mesh, weights, name=''):
     fig.show()
     
 def PlotFilters(meshset):
+    """
+    plot first row/column of A,B,P,Q filters for every mesh in meshset
+    
+    Parameters
+    -----------
+    meshset : iterable of Trimesh
+      the meshes from which to plot
+      
+    Returns
+    -----------
+    matplotlib fig
+    
+    """
     fig, axs = plt.subplots(2,2,figsize=(10,10))
     for mesh in (meshset):
         plane = np.isclose(mesh.vertices[:,2],np.zeros(mesh.vertices[:,2].shape))
@@ -196,6 +260,21 @@ def PlotFilters(meshset):
     fig.tight_layout()
 
 def PlotWavelets(SWF,idx=0):
+      """
+    plot wavelets and scaling functions for a given base vertex within a given SWF
+    
+    Parameters
+    -----------
+    SWF : SWF object
+      the format of interest
+    idx : int
+      the index of the vertex to graph
+      
+    Returns
+    -----------
+    matplotlib fig
+    
+    """
     fig, axs = plt.subplots(2,2,figsize=(15,15))
     for i in range(0,SWF.n):
         mesh = SWF.meshes[-1]
@@ -222,6 +301,19 @@ def PlotWavelets(SWF,idx=0):
     fig.tight_layout()
 
 def AreaTRI(TRI):
+      """
+    Calculates the area of a triangle supplied as a 1x3x3 array
+    
+    Parameters
+    -----------
+    TRI : (n, 3, 3) float
+      n triangles of which to calculate the area
+      
+    Returns
+    -----------
+    area : (n, 1) float
+    
+    """
     TR = TRI[:,1] - TRI[:,0] #get the TR vector of the triangle TRI
     TI = TRI[:,2] - TRI[:,0] #get the TI vector of the triangle TRI
     return np.linalg.norm(np.cross(TR,TI),axis=1)/2 #Area of the triangle TRI

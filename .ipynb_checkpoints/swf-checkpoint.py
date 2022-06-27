@@ -88,6 +88,20 @@ class SWF():
         return result
 
     def encode(self,data,truncation_level=0):
+        """
+    Return the closest point on the surface of each triangle for a
+    list of corresponding points.
+    
+    Parameters
+    ----------
+    data : (n,) float
+      some audio to encode to a specific location
+    truncation level : int
+      level at which to encode, default 0 
+    Returns
+    ----------
+    encoded : (shape of vertices at truncation level)
+    """
         encoded = self.phi2s[truncation_level] @ data
         return encoded
     
