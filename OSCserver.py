@@ -60,6 +60,11 @@ if __name__ == '__main__':
     # ---------------------------------------------------------- #
 
     # ------------------ Interpolation GENERATION  ------------------ #
+    try:
+        sys.argv[1]
+    except IndexError as e:
+        sys.exit("Please provide, as a command line argument, the name of the model you'd like to use: 704base or transcoding")
+    
     print('initializing model . . .')
     
     method = sys.argv[1]
@@ -71,6 +76,11 @@ if __name__ == '__main__':
         encoder = model.phi2s[0]
     
     elif method == 'transcoding':
+        try:
+            sys.argv[2]
+        except IndexError as e:
+            sys.exit("Please provide, as a command line argument, the truncation level for transcoding mesh: int 0-5")
+            
         print(f'transcoding {sys.argv[2]}')
         #for the transcoding mesh
         key = transcoding_precomputed_coeffs
