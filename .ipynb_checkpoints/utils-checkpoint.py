@@ -260,7 +260,7 @@ def PlotFilters(meshset):
     fig.tight_layout()
 
 def PlotWavelets(SWF,idx=0):
-      """
+    """
     plot wavelets and scaling functions for a given base vertex within a given SWF
     
     Parameters
@@ -301,7 +301,7 @@ def PlotWavelets(SWF,idx=0):
     fig.tight_layout()
 
 def AreaTRI(TRI):
-      """
+    """
     Calculates the area of a triangle supplied as a 1x3x3 array
     
     Parameters

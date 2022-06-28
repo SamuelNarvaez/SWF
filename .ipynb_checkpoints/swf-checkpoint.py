@@ -7,7 +7,6 @@ class SWF():
     def __init__(self,base,n=3,meshset=None):
         '''
         base : Trimesh 
-            string points to some predefined base mesh
             Trimesh sets the base mesh manually
         
         n : int
