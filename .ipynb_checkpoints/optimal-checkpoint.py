@@ -10,7 +10,7 @@ class OptimalSWF():
         self.faces = faces
         self.n = n
         self.level_to_optimize = level_to_optimize
-        initial_guess = np.array([0.5,0])
+        initial_guess = np.array([0.5,0]) + np.random.rand(1,2)/10
         res = minimize(self.f,initial_guess)
         a,b = res.x
         c = (1-2*(a+b))/4

@@ -148,6 +148,69 @@ def toCartesian(point):
     z = point[0]*np.cos(point[2])
     return np.array([x,y,z])
 
+def PlotMesh(mesh,name=''):  
+    x = mesh.vertices[:,0]
+    y = mesh.vertices[:,1]
+    z = mesh.vertices[:,2]
+    i = mesh.faces[:,0]
+    j = mesh.faces[:,1]
+    k = mesh.faces[:,2]
+
+    verts = mesh.vertices
+    faces = mesh.faces
+
+    fig = make_subplots(
+              rows=1, cols=2, 
+              subplot_titles=(f'{name} Level {mesh.level} 3D Mesh', f'{name} Level {mesh.level} 3D Mesh with faces colored'),
+              horizontal_spacing=0.02,
+              specs=[[{"type": "scene"}]*2])  
+
+    #plot surface triangulation
+    tri_vertices = verts[faces]
+    Xe = []
+    Ye = []
+    Ze = []
+    for T in tri_vertices:
+        Xe += [T[k%3][0] for k in range(4)] + [ None]
+        Ye += [T[k%3][1] for k in range(4)] + [ None]
+        Ze += [T[k%3][2] for k in range(4)] + [ None]
+
+
+    fig.add_trace(go.Scatter3d(x=Xe,
+                         y=Ye,
+                         z=Ze,
+                         mode='lines',
+                         name='',
+                         line=dict(color= 'rgb(40,40,40)', width=0.5)), 1, 1);
+
+    lighting = dict(ambient=0.5,
+                    diffuse=1,
+                    fresnel=4,        
+                    specular=0.5,
+                    roughness=0.05,
+                    facenormalsepsilon=0)
+    lightposition=dict(x=100,
+                       y=100,
+                       z=10000)
+
+    fig.add_trace(go.Mesh3d(x=x, y=y, z=z, 
+                            i=i, j=j, k=k, colorscale='matter_r' ,
+                            colorbar_len=0.85,
+                            colorbar_x=0.97,
+                            colorbar_thickness=20,
+                            intensity=np.random.rand(len(faces)),  
+                            intensitymode='cell',
+                            flatshading=True), 1, 2)
+    fig.data[1].update(lighting=lighting,
+                       lightposition=lightposition)                         
+
+
+    fig.update_layout(width=1000, height=600, font_size=10)
+    fig.update_scenes(camera_eye_x=1.45, camera_eye_y=1.45, camera_eye_z=1.45);
+    fig.update_scenes(xaxis_visible=False, yaxis_visible=False,zaxis_visible=False )
+
+    fig.show()
+    
 def weights3D(mesh, weights, name=''):  
     """
     plot weights over the vertices of a mesh
@@ -221,7 +284,7 @@ def weights3D(mesh, weights, name=''):
 
     fig.show()
     
-def PlotFilters(meshset):
+def PlotFilters(meshset,idx=0):
     """
     plot first row/column of A,B,P,Q filters for every mesh in meshset
     
@@ -235,19 +298,19 @@ def PlotFilters(meshset):
     matplotlib fig
     
     """
-    fig, axs = plt.subplots(2,2,figsize=(10,10))
+    fig, axs = plt.subplots(2,2,figsize=(12,12))
     for mesh in (meshset):
         plane = np.isclose(mesh.vertices[:,2],np.zeros(mesh.vertices[:,2].shape))
         P,Q,A,B = mesh.filters
         azimuth = np.arctan2(mesh.vertices[:,1],mesh.vertices[:,0])[plane].flatten()
         sorts = np.argsort(azimuth)
-        axs[0,0].plot(azimuth[sorts],A[0,:][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
+        axs[0,0].plot(azimuth[sorts],A[idx,:][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
 
-        axs[0,1].plot(azimuth[sorts],B[0,:][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
+        axs[0,1].plot(azimuth[sorts],B[idx,:][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
 
-        axs[1,0].plot(azimuth[sorts],P[:,0][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
+        axs[1,0].plot(azimuth[sorts],P[:,idx][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
 
-        axs[1,1].plot(azimuth[sorts],Q[:,0][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
+        axs[1,1].plot(azimuth[sorts],Q[:,idx][plane].flatten()[sorts],'--o',label=f'Level {mesh.level-1}')
 
     axs[0,0].set_title('First Row of A')
     axs[0,1].set_title('First Row of B')
@@ -275,7 +338,7 @@ def PlotWavelets(SWF,idx=0):
     matplotlib fig
     
     """
-    fig, axs = plt.subplots(2,2,figsize=(15,15))
+    fig, axs = plt.subplots(2,2,figsize=(10,10))
     for i in range(0,SWF.n):
         mesh = SWF.meshes[-1]
         plane = np.isclose(mesh.vertices[:,2],np.zeros(mesh.vertices[:,2].shape))
