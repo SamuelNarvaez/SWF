@@ -491,3 +491,77 @@ def closest_point_corresponding(triangles, points):
         result[remain] = a[remain] + (ab[remain] * v) + (ac[remain] * w)
 
     return result
+
+def total_acoustic_pressure(coarse):
+    """
+    Return the total acoustic pressure in some coarse representation
+    
+    Parameters
+    ----------
+    coarse : (n, k) float
+      signal length k encoded to a coarse (n-point) representation
+    Returns
+    ----------
+    total_acoustic_pressure : (k,) float
+      TAP for each sample in k
+    """
+    return np.sum(coarse)
+
+def energy(coarse):
+    """
+    Return the total energy in some coarse representation
+    
+    Parameters
+    ----------
+    coarse : (n, k) float
+      signal length k encoded to a coarse (n-point) representation
+    Returns
+    ----------
+    energy : (k,) float
+      energy for each sample in k
+    """
+    return np.sum(np.absolute(coarse)**2)
+def velocity(coarse,vertices,loc):
+    """
+    Return the longitudinal and transverse velocity in some coarse representation
+    
+    Parameters
+    ----------
+    coarse : (n, k) float
+      signal length k encoded to a coarse (n-point) representation
+    vertices : (n, 3) float
+      vertex locations for coarse mesh
+    loc : (3, k) float
+      virtual source location in R3 for each sample in k
+    Returns
+    ----------
+    (Vl,Vt) : ((k,),(k,)) float
+      Longitudinal and Transverse velocities, respectively 
+    """
+    coarse = coarse.reshape(11,1)
+    V_ = np.sum(coarse * vertices,axis=0)#velocity vector for each vertex
+    Vl = np.sum(V_ * loc)
+    Vt = np.linalg.norm(np.cross(V_,loc))
+    return Vl,Vt
+def intensity(coarse,vertices,loc):
+    """
+    Return the longitudinal and transverse intensity in some coarse representation
+    
+    Parameters
+    ----------
+    coarse : (n, k) float
+      signal length k encoded to a coarse (n-point) representation
+    vertices : (n, 3) float
+      vertex locations for coarse mesh
+    loc : (3, k) float
+      virtual source location in R3 for each sample in k
+    Returns
+    ----------
+    (Il,It) : ((k,),(k,)) float
+      Longitudinal and Transverse intensities, respectively 
+    """
+    coarse = coarse.reshape(11,1)
+    I_ = np.sum((np.absolute(coarse)**2 * vertices)/energy(coarse,loc),axis=0)#velocity vector for each vertex
+    Il = np.sum(I_ * loc)
+    It = np.linalg.norm(np.cross(I_,loc))
+    return Il,It
