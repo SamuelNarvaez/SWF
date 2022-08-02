@@ -25,7 +25,7 @@ in trimesh.py, you'll find a data structure for a triangular mesh, based heavily
 	date = {2019-12-8},
 }
 
-The important method of the trimesh object is subdivison. After specifying a base mesh, we can subdivide it automatically using the loop subdivision scheme, or the user can manually specify the next subdivision mesh. Subdivsion allows us to approximate the sphere (or hemisphere) with greater resolution–resulting in higher spatial resolution. Upon subdivision, a trimesh builds the Decoding and Encoding filters P,Q and A,B which allow us to represent data defined over the mesh at different levels of mesh. 
+The important method of the Trimesh object is subdivison. After specifying a base mesh, we can subdivide it automatically using the loop subdivision scheme, or the user can manually specify the next subdivision mesh. Subdivsion allows us to approximate the sphere (or hemisphere) with greater resolution–resulting in higher spatial resolution. Upon subdivision, a trimesh builds the Decoding and Encoding filters P,Q and A,B which allow us to represent data defined over the mesh at different levels of detail. 
 
 More specifically, if we have data f defined over the fine (subdivided) level of mesh, applying the A filter to the data f gives us a spatially low-passed representation of it, c, defined over the coarse (pre-subdivision) mesh. Applying the B filter to the data f gives us a representation of all the details, d, not included in the spatially low-passed representation, its dimensionality being the number of points added by the subdivision scheme. 
 
