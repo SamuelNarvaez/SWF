@@ -6,7 +6,7 @@ This is a working repository for ongoing research on Spherical Wavelet Format (S
 
 > D. Scaini and D. Arteaga, “Wavelet-Based Spatial Audio Format” J. Audio Eng. Soc., vol. 68, no. 9, pp. 613–627, (2020 September.). DOI: https://doi.org/10.17743/jaes.2020.0049
 
-I am actively developing this project with the hopes of publishing a robust python library for playing around with SWF.
+I am actively developing this project with the hopes of publishing a robust python library for playing around with SWF. In the dev branch, you will find a folder called testing which has a lot of good example notebooks. 
 
 At the moment, everything works, but lacks good exception handling and I urge any user to navigate with caution. Feel free to reach out to me with any questions!
 
