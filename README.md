@@ -51,6 +51,8 @@ Similarly, if you want your SWF format to be optimized for some psychoacoustical
 optimized_3_subdivisions = OptimalSWF(vertices_octahedron,faces_octahedron,n=3).model #SWF object
 ```
 
+the SWF object holds the entire sequence of subdivison meshes, as well as the sequence of P,Q,A,B filters to transition data between them. For convenience, the wavelets, dual wavelets, scaling functions, dual scaling functions have been precomputed for each level and are stored in a list as an attribute. 
+
 Here's a brief overview of the structure of the libary:
 
 # trimesh.py
