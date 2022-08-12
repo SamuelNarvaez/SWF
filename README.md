@@ -12,6 +12,45 @@ At the moment, everything works, but lacks good exception handling and I urge an
 
 If you're a Max 8 user, the included max patch is a great place to start exploring this work. 
 
+In SWF, we decompose the soundfield by a set of basis functions called spherical wavelets. This is all handled by the library, and it is not neccessary to understand the mathematical details in order to generate and use a SWF format. I would, recommend you read the above reference if you're interested in learning more.
+
+A particular Spherical Wavelet Format is defined by:
+* A sequence of Subdivision Meshes such that every vertex of a mesh is a subset of the next mesh in the sequence.
+* Encoding and Decoding filters P,Q, and A,B respectively, for each mesh in the sequence that satisfy biorthogonality relations, the set of all filters define a wavelet space.
+* A truncation level, which specifies the order of wavelet decomposition
+
+
+To use this library, first define a base triangular mesh that closely resembles your indtended speaker layout for reproduction. This can be done by passing the coordinates of the vertices in R3 as a numpy array and the faces as a numpy array of indices of vertices in the vertex array to the Trimesh constructor. Consider this example, with an octahedron as the base:
+
+```
+from trimesh import * 
+import numpy as np
+
+vertices_octahedron = np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])
+faces_octahedron = np.array([[1,2,4],[1,3,4],[3,0,4],[0,2,4],[1,3,5],[3,0,5],[0,2,5],[2,1,5]])
+
+base = Trimesh(vertices704,faces704)
+```
+
+Next, decide how many levels of subdivision (resulting in a higher spatial-resolution mesh) you would like to carry out –– 3 is a good place to start. You can subdivide by hand, by calling the subdivide method of the Trimesh object, which returns a new, subdivided Trimesh Object:
+
+```
+subdivided_once = base.subdivide() #Trimesh object
+subdivided_twice = subdivided_once.subdivide() #Trimesh object
+```
+
+It is most likely you will want to use a higher-level interface to automate this proccess. The SWF class found in swf.py abstracts the subdivision procces and allows the specification of the number of subdivisions as an argument:
+
+```
+swf_3_subdivisions = SWF(Trimesh(vertices_octahedron,faces_octahedron), n=3) #SWF object
+```
+
+Similarly, if you want your SWF format to be optimized for some psychoacoustical properties, you can use the OptimalSWF class found in optimal.py to automatically subdivide with optimal lifting coefficients:
+
+```
+optimized_3_subdivisions = OptimalSWF(vertices_octahedron,faces_octahedron,n=3).model #SWF object
+```
+
 Here's a brief overview of the structure of the libary:
 
 # trimesh.py
