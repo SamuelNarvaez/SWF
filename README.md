@@ -60,6 +60,21 @@ optimized_3_subdivisions = OptimalSWF(vertices_octahedron,faces_octahedron,n=3).
 
 the SWF object holds the entire sequence of subdivison meshes, as well as the sequence of P,Q,A,B filters to transition data between them. For convenience, the wavelets, dual wavelets, scaling functions, dual scaling functions have been precomputed for each level and are stored in a list as an attribute. 
 
+
+The most common operations needed for a given swf are encoding, and interpolating. If we have a virtual source, and we want to encode it in SWF at location x,y,z:
+
+```
+loc = np.array([x,y,z])
+fine = swf.interpolate(loc)
+```
+the interpolate method performs VBAP-style interpolation at the finest level of spatial resolution, and returns a vector defined over the finest level of mesh which can be multiplied against the signal of our virtual source to place it in space. To encode to our coarsest level of mesh:
+
+```
+data = signal * fine
+coarse = swf.encode(data)
+```
+If our coarsest level of mesh is the same as our speaker array, we can send the resulting channels directly to the speakers. If we have encoded to some higher truncation level, or our mesh is not identical to the speaker array, some additional decoding step must be implemented and calculated at this point.
+
 Here's a brief overview of the structure of the libary:
 
 # trimesh.py
@@ -87,7 +102,8 @@ Here, to generate P,Q,A and B, we start with a trivial set of filters and then a
 
 # swf.py
 
-If you didn't exactly understand why we need everything in trimesh.py, that's okay. At some point it's just details. In swf.py we attempt to abstract away a useful amount of detail. swf.py builds SWF objects, which is a representation of a complete SWF format. In an SWF, we have:
+If you didn't exactly understand why we need everything in trimesh.py, that's okay. At some point it's just details. In swf.py we attempt to abstract away a useful amount of detail. swf.py builds SWF objects, which is a representation of a complete SWF format. In an SWF object, we have:
+
 * A sequence of Subdivision Meshes such that every vertex of a mesh is a subset of the next mesh in the sequence.
 * Encoding and Decoding filters P,Q, and A,B respectively, for each mesh in the sequence that satisfy biorthogonality relations, the set of all filters define a wavelet space.
 * A truncation level, which specifies the order of wavelet decomposition, for audio purpouses you can think of this as the point to which we decode to the speaker layout.
