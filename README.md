@@ -37,17 +37,24 @@ Next, decide how many levels of subdivision (resulting in a higher spatial-resol
 ```
 subdivided_once = base.subdivide() #Trimesh object
 subdivided_twice = subdivided_once.subdivide() #Trimesh object
+subdivided_threetimes = subdivided_twice.subdivide() #Trimesh object
 ```
 
-It is most likely you will want to use a higher-level interface to automate this proccess. The SWF class found in swf.py abstracts the subdivision procces and allows the specification of the number of subdivisions as an argument:
+This interface can be useful if you're interested in the details/having more control. Each call to subdivide is also generating the filters P,Q,A,B as described in the original paper via the lifting scheme. 
+
+However, it is most likely you will want to use a higher-level interface to automate this proccess. The SWF class found in swf.py abstracts the subdivision procces and allows the specification of the number of subdivisions as an argument:
 
 ```
+from swf import *
+
 swf_3_subdivisions = SWF(Trimesh(vertices_octahedron,faces_octahedron), n=3) #SWF object
 ```
 
 Similarly, if you want your SWF format to be optimized for some psychoacoustical properties, you can use the OptimalSWF class found in optimal.py to automatically subdivide with optimal lifting coefficients:
 
 ```
+from optimal import *
+
 optimized_3_subdivisions = OptimalSWF(vertices_octahedron,faces_octahedron,n=3).model #SWF object
 ```
 
