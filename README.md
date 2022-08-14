@@ -79,13 +79,15 @@ Here's a brief overview of the structure of the libary:
 # trimesh.py
 in trimesh.py, you'll find a data structure for a triangular mesh, based heavily on Mike Dawson-Haggerty's trimesh.
 
-> @software{trimesh,
+```
+@software{trimesh,
 	author = {{Dawson-Haggerty et al.}},
 	title = {trimesh},
 	url = {https://trimsh.org/},
 	version = {3.2.0},
 	date = {2019-12-8},
 }
+```
 
 The important method of the Trimesh object is subdivison. After specifying a base mesh, we can subdivide it automatically using the loop subdivision scheme, or the user can manually specify the next subdivision mesh. Subdivsion allows us to approximate the sphere (or hemisphere) with greater resolution–resulting in higher spatial resolution. Upon subdivision, a trimesh builds the Decoding and Encoding filters P,Q and A,B which allow us to represent data defined over the mesh at different levels of detail. 
 
