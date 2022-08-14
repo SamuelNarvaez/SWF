@@ -50,7 +50,9 @@ from swf import *
 swf_3_subdivisions = SWF(Trimesh(vertices_octahedron,faces_octahedron), n=3) #SWF object
 ```
 
-Similarly, if you want your SWF format to be optimized for some psychoacoustical properties, you can use the OptimalSWF class found in optimal.py to automatically subdivide with optimal lifting coefficients:
+the SWF object holds the entire sequence of subdivison meshes, as well as the sequence of P,Q,A,B filters to transition data between them. For convenience, the wavelets, dual wavelets, scaling functions, dual scaling functions have been precomputed for each level and are stored in a list as an attribute. 
+
+Similarly, if you want your SWF format to be optimized for some psychoacoustical properties, you can use the OptimalSWF class found in optimal.py to automatically subdivide and generate optimized filters along the way:
 
 ```
 from optimal import *
@@ -58,20 +60,17 @@ from optimal import *
 optimized_3_subdivisions = OptimalSWF(vertices_octahedron,faces_octahedron,n=3).model #SWF object
 ```
 
-the SWF object holds the entire sequence of subdivison meshes, as well as the sequence of P,Q,A,B filters to transition data between them. For convenience, the wavelets, dual wavelets, scaling functions, dual scaling functions have been precomputed for each level and are stored in a list as an attribute. 
-
-
 The most common operations needed for a given swf are encoding, and interpolating. If we have a virtual source, and we want to encode it in SWF at location x,y,z:
 
 ```
 loc = np.array([x,y,z])
-fine = swf.interpolate(loc)
+interpolation = swf.interpolate(loc)
 ```
 the interpolate method performs VBAP-style interpolation at the finest level of spatial resolution, and returns a vector defined over the finest level of mesh which can be multiplied against the signal of our virtual source to place it in space. To encode to our coarsest level of mesh:
 
 ```
-data = signal * fine
-coarse = swf.encode(data)
+fine = signal * interpolation
+coarse = swf.encode(fine)
 ```
 If our coarsest level of mesh is the same as our speaker array, we can send the resulting channels directly to the speakers. If we have encoded to some higher truncation level, or our mesh is not identical to the speaker array, some additional decoding step must be implemented and calculated at this point.
 
