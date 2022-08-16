@@ -104,14 +104,17 @@ class SWF():
         encoded = self.phi2s[truncation_level] @ data
         return encoded
     
-    def interpolate(self,loc):
+    def interpolate(self,loc,hop_size=1):
         '''
         for a given point (loc), returns the triangular interpolation accross the three vertices of the nearest triangle PQR on the mesh. For a vertex P and a query point S, the interpolation weight for a vertex P is calculated as the area of the sub-triangle SQR divided by the total area of the triangle PQR. 
         
         '''
         loc = loc.reshape((-1,3))
         triangles = self.meshes[-1].vertices[self.meshes[-1].faces]
-        closest, dist, ind = self.meshes[-1].closest_point_naive(loc)
+        closest, dist, ind = self.meshes[-1].closest_point_naive(loc[::hop_size])
+        closest = np.repeat(closest,hop_size)
+        dist = np.repeat(dist,hop_size)
+        ind = np.repeat(ind,hop_size)
 
         PQR = triangles[ind]
     
@@ -136,8 +139,7 @@ class SWF():
 
         interpolation = np.vstack((AreaSQR/AreaPQR,AreaPSR/AreaPQR,AreaPQS/AreaPQR)).T 
         interpolation = interpolation/interpolation.sum(axis=1).reshape(-1,1)
-        
-        fine = np.zeros((self.meshes[-1].vertices.shape[0],1)) 
-        fine[self.meshes[-1].faces[ind]] = interpolation.reshape((1,3,1))
+        fine = np.zeros((self.meshes[-1].vertices.shape[0],loc.shape[0]))
+        fine[self.meshes[-1].faces[ind],np.arange(ind.shape[0]).reshape(-1,1)] = interpolation
         
         return fine
