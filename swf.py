@@ -88,13 +88,12 @@ class SWF():
 
     def encode(self,data,truncation_level=0):
         """
-    Return the closest point on the surface of each triangle for a
-    list of corresponding points.
+    Encode data in the fine representation to the coarse representation using the encoding filter at the given truncation level
     
     Parameters
     ----------
     data : (n,) float
-      some audio to encode to a specific location
+      some signal defined over the finest level of mesh
     truncation level : int
       level at which to encode, default 0 
     Returns
@@ -106,8 +105,18 @@ class SWF():
     
     def interpolate(self,loc,hop_size=1):
         '''
-        for a given point (loc), returns the triangular interpolation accross the three vertices of the nearest triangle PQR on the mesh. For a vertex P and a query point S, the interpolation weight for a vertex P is calculated as the area of the sub-triangle SQR divided by the total area of the triangle PQR. 
-        
+        for a given point (loc), returns the triangular interpolation accross the three vertices of the nearest triangle PQR on the mesh. 
+        For a vertex P and a query point S, the interpolation weight for a vertex P is calculated as the area of the sub-triangle SQR divided by the total area of the triangle PQR. 
+        Parameters
+        ----------
+        loc : (n,3) float
+          one or many query points 
+        hop_size (optional) : int
+          if loc is an array with n>1, for example: a 1-second panning of 48000 samples, the hop size can reduce the number of calculations performed 
+          at the cost of spatial resolution in time. A hop size of 10 for example would reduce from 48000 to 4800 calculations 
+        Returns
+        ----------
+        encoded : (shape of vertices at truncation level)
         '''
         loc = loc.reshape((-1,3))
         triangles = self.meshes[-1].vertices[self.meshes[-1].faces]
