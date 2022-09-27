@@ -2,6 +2,8 @@
 
 About this Repo:
 
+Thesis Report : https://zenodo.org/record/7116375#.YzMMSiXtbDs
+
 This is a working repository for ongoing research on Spherical Wavelet Format (SWF), a spatial audio format invented by my advisors Davide Scaini and Daniel Arteaga, as described in :
 
 > D. Scaini and D. Arteaga, “Wavelet-Based Spatial Audio Format” J. Audio Eng. Soc., vol. 68, no. 9, pp. 613–627, (2020 September.). DOI: https://doi.org/10.17743/jaes.2020.0049
