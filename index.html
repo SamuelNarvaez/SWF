@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html class="has-darkest-background" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Spherical Wavelet Format</title>
+    <style>
+        /*  =============  USING THE PROVIDED COLORS & STYLES  =============  */
+        body {
+            font-family: monospace;
+            background-color: rgb(253, 245, 220);
+            color: rgb(99, 90, 66);
+            text-align: left;
+            margin: 0;
+            padding: 20px;
+        }
+        .is-italic {
+            font-style: italic;
+            text-align: center;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+        a {
+            color: rgb(229, 160, 96);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .header img {
+            max-width: 20%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        .oval-image {
+            width: 200px; 
+            height: 200px; 
+            object-fit: cover;
+            clip-path: polygon(
+                0% 0%, 
+                100% 0%, 
+                90% 75%, 
+                75% 85%, 
+                50% 90%, 
+                25% 85%, 
+                10% 75%
+            );
+        }
+        .ascii-art {
+            white-space: pre;
+            font-size: 6px;
+            color: rgb(71, 89, 214);
+            text-align: center;
+        }
+        .section {
+            margin-top: 20px;
+        }
+        .section p {
+            white-space: pre-wrap; /* Allow long text to wrap properly */
+        }
+        code, pre code {
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+        }
+        pre {
+            background-color: rgba(229, 160, 96, 0.2);
+            padding: 1em;
+            overflow-x: auto;
+            border-radius: 4px;
+        }
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Main Content -->
+        <h1>Spherical Wavelet Format</h1>
+
+        <div class="section">
+            <p>
+<b>About this Repo:</b><br/>
+Thesis Report: 
+<a href="https://zenodo.org/record/7116375#.YzMMSiXtbDs" target="_blank">https://zenodo.org/record/7116375#.YzMMSiXtbDs</a>
+            </p>
+            <p>
+This is a working repository for ongoing research on Spherical Wavelet Format (SWF), a spatial audio format invented by my advisors <b>Davide Scaini</b> and <b>Daniel Arteaga</b>, as described in:
+
+<blockquote>
+D. Scaini and D. Arteaga, “Wavelet-Based Spatial Audio Format” J. Audio Eng. Soc., vol. 68, no. 9, pp. 613–627, (2020 September.). 
+DOI: <a href="https://doi.org/10.17743/jaes.2020.0049" target="_blank">https://doi.org/10.17743/jaes.2020.0049</a>
+</blockquote>
+
+I am actively developing this project with the hopes of publishing a robust python library for playing around with SWF. In the <code>dev</code> branch, you will find a folder called <code>testing</code> which has a lot of good example notebooks. 
+
+At the moment, everything works, but lacks good exception handling and I urge any user to navigate with caution. Feel free to reach out to me with any questions!
+
+If you're a Max 8 user, the included max patch is a great place to start exploring this work. 
+            </p>
+        </div>
+
+        <div class="section">
+            <p>
+In SWF, we decompose the soundfield by a set of basis functions called <em>spherical wavelets</em>. This is all handled by the library, and it is not necessary to understand the mathematical details in order to generate and use a SWF format. I would, however, recommend you read the above reference if you're interested in learning more.
+            </p>
+
+            <p>
+A particular Spherical Wavelet Format is defined by:
+            </p>
+
+            <ul>
+                <li>A sequence of Subdivision Meshes such that every vertex of a mesh is a subset of the next mesh in the sequence.</li>
+                <li>Encoding and Decoding filters <code>P, Q</code>, and <code>A, B</code> respectively, for each mesh in the sequence that satisfy biorthogonality relations, the set of all filters define a wavelet space.</li>
+                <li>A truncation level, which specifies the order of wavelet decomposition</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Using this Library</h2>
+            <p>
+First define a base triangular mesh that closely resembles your intended speaker layout for reproduction. This can be done by passing the coordinates of the vertices in R3 as a numpy array and the faces as a numpy array of indices of vertices in the vertex array to the <code>Trimesh</code> constructor. Consider this example, with an octahedron as the base:
+            </p>
+            <pre><code>from trimesh import * 
+import numpy as np
+
+vertices_octahedron = np.array([[1,0,0],
+                                [-1,0,0],
+                                [0,1,0],
+                                [0,-1,0],
+                                [0,0,1],
+                                [0,0,-1]])
+
+faces_octahedron = np.array([[1,2,4],
+                             [1,3,4],
+                             [3,0,4],
+                             [0,2,4],
+                             [1,3,5],
+                             [3,0,5],
+                             [0,2,5],
+                             [2,1,5]])
+
+base = Trimesh(vertices_octahedron, faces_octahedron)
+</code></pre>
+
+            <p>
+Next, decide how many levels of subdivision (resulting in a higher spatial-resolution mesh) you would like to carry out –– 3 is a good place to start. You can subdivide by hand, by calling the <code>subdivide()</code> method of the <code>Trimesh</code> object, which returns a new, subdivided <code>Trimesh</code> Object:
+            </p>
+            <pre><code>subdivided_once = base.subdivide()         # Trimesh object
+subdivided_twice = subdivided_once.subdivide() 
+subdivided_threetimes = subdivided_twice.subdivide()
+</code></pre>
+
+            <p>
+This interface can be useful if you're interested in the details/having more control. Each call to subdivide is also generating the filters <code>P</code>, <code>Q</code>, <code>A</code>, <code>B</code> as described in the original paper via the lifting scheme. 
+            </p>
+
+            <p>
+However, it is most likely you will want to use a higher-level interface to automate this process. The <code>SWF</code> class found in <code>swf.py</code> abstracts the subdivision process and allows the specification of the number of subdivisions as an argument:
+            </p>
+            <pre><code>from swf import *
+
+swf_3_subdivisions = SWF(Trimesh(vertices_octahedron, faces_octahedron), n=3)  # SWF object
+</code></pre>
+
+            <p>
+The <code>SWF</code> object holds the entire sequence of subdivision meshes, as well as the sequence of <code>P, Q, A, B</code> filters to transition data between them. For convenience, the wavelets, dual wavelets, scaling functions, and dual scaling functions have been precomputed for each level and are stored in a list as an attribute. 
+            </p>
+
+            <p>
+Similarly, if you want your SWF format to be optimized for some psychoacoustical properties, you can use the <code>OptimalSWF</code> class found in <code>optimal.py</code> to automatically subdivide and generate optimized filters along the way:
+            </p>
+            <pre><code>from optimal import *
+
+optimized_3_subdivisions = OptimalSWF(vertices_octahedron,
+                                      faces_octahedron,
+                                      n=3).model  # SWF object
+</code></pre>
+
+            <p>
+The most common operations needed for a given <code>SWF</code> are encoding and interpolating. If we have a virtual source, and we want to encode it in SWF at location <code>x, y, z</code>:
+            </p>
+            <pre><code>loc = np.array([x, y, z])
+interpolation = swf.interpolate(loc)
+</code></pre>
+
+            <p>
+The <code>interpolate</code> method performs VBAP-style interpolation at the finest level of spatial resolution, and returns a vector defined over the finest level of mesh which can be multiplied against the signal of our virtual source to place it in space. To encode to our coarsest level of mesh:
+            </p>
+            <pre><code>fine = signal * interpolation
+coarse = swf.encode(fine)
+</code></pre>
+
+            <p>
+If our coarsest level of mesh is the same as our speaker array, we can send the resulting channels directly to the speakers. If we have encoded to some higher truncation level, or our mesh is not identical to the speaker array, some additional decoding step must be implemented and calculated at this point.
+            </p>
+        </div>
+
+        <div class="section">
+            <h2>Structure of the Library</h2>
+            <p>
+<b>trimesh.py</b><br/>
+In <code>trimesh.py</code>, you'll find a data structure for a triangular mesh, based heavily on Mike Dawson-Haggerty's 
+<a href="https://trimsh.org/" target="_blank">trimesh</a>:
+            </p>
+            <pre><code>@software{trimesh,
+    author = {{Dawson-Haggerty et al.}},
+    title = {trimesh},
+    url = {https://trimsh.org/},
+    version = {3.2.0},
+    date = {2019-12-8},
+}
+</code></pre>
+
+            <p>
+The important method of the <code>Trimesh</code> object is subdivision. After specifying a base mesh, we can subdivide it automatically using the loop subdivision scheme, or the user can manually specify the next subdivision mesh. Subdivision allows us to approximate the sphere (or hemisphere) with greater resolution – resulting in higher spatial resolution. Upon subdivision, a <code>Trimesh</code> builds the Decoding and Encoding filters <code>P, Q</code> and <code>A, B</code> which allow us to represent data defined over the mesh at different levels of detail. 
+            </p>
+
+            <p>
+More specifically, if we have data <code>f</code> defined over the fine (subdivided) level of mesh, applying the <code>A</code> filter to <code>f</code> gives us a spatially low-passed representation of it, <code>c</code>, defined over the coarse (pre-subdivision) mesh. Applying the <code>B</code> filter to <code>f</code> gives us a representation of all the details, <code>d</code>, not included in the spatially low-passed representation; its dimensionality is the number of points added by the subdivision scheme. 
+
+Conversely, the <code>P</code> filter takes the coarse representation <code>c</code> and upsamples it over the fine mesh. Similarly, the <code>Q</code> filter takes the details <code>d</code> and upsamples it over the fine mesh. 
+            </p>
+
+            <p>
+Here, to generate <code>P, Q, A</code> and <code>B</code>, we start with a trivial set of filters and then apply the Lifting Scheme, or in the case of this library, a Modified Lifting Scheme better suited for spatial audio. The lifting scheme ensures that the generated filters are biorthogonal, meaning essentially that:
+            </p>
+            <ul>
+                <li>There is no overlap in the vertices of the mesh that the non-corresponding filters act upon.</li>
+                <li>There is no vertex acted upon by the decoders that the corresponding encoder does not act upon.</li>
+                <li>There is no information that is left out of the encoding by <code>A</code> and <code>B</code>, and no information that cannot be decoded by <code>P</code> and <code>Q</code>.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <p>
+<b>swf.py</b><br/>
+If you didn't exactly understand why we need everything in <code>trimesh.py</code>, that's okay. At some point it's just details. In <code>swf.py</code> we attempt to abstract away a useful amount of detail. <code>swf.py</code> builds <code>SWF</code> objects, which is a representation of a complete SWF format. In an <code>SWF</code> object, we have:
+            </p>
+            <ul>
+                <li>A sequence of Subdivision Meshes such that every vertex of a mesh is a subset of the next mesh in the sequence.</li>
+                <li>Encoding and Decoding filters <code>P, Q</code>, and <code>A, B</code> respectively, for each mesh in the sequence that satisfy biorthogonality relations, the set of all filters define a wavelet space.</li>
+                <li>A truncation level, which specifies the order of wavelet decomposition, for audio purposes you can think of this as the point to which we decode to the speaker layout.</li>
+            </ul>
+
+            <p>
+There are two mandatory arguments: <code>base</code> and <code>level</code>. <code>base</code> expects a <code>Trimesh</code> object, and the <code>level</code> defines how many iterations of subdivision to perform. Note that the time complexity of the subdivision increases exponentially, without much gain in spatial resolution after 3 iterations or so, so try to keep <code>level</code> less than or equal to 4 unless you want to wait a while. 
+
+I recommend using a base mesh with vertices as close to your speaker layout as possible, that way you can use the trivial decoding from the base mesh and send the gains directly to your speakers. 
+
+Note: If you plan on manually subdividing your base mesh, use the <code>meshest</code> argument when instantiating an <code>SWF</code> to provide all the manual subdivisions in an ordered list. You might want to manually subdivide to impute virtual points to correct issues with L/R symmetry in the triangulation of your base mesh, for example.
+            </p>
+        </div>
+
+        <div class="section">
+            <p>
+<b>optimal.py</b><br/>
+Extends <code>SWF</code>, performs an optimization on the filter <code>A</code> for psychoacoustical properties. If you're not interested in all the details, I would start here. Generate an optimal SWF with a base mesh identical to your speaker layout.
+            </p>
+
+            <p>
+<b>OSCserver.py</b><br/>
+For a virtual source at location received over OSC, calculate a VBAP-style trilinear interpolation over the finest level of mesh and send the result over OSC. The interpolation must be encoded to the coarse mesh at the destination. Central to the functioning of the included Max Patch.
+            </p>
+
+            <p>
+<b>utils.py and constants.py</b><br/>
+Various helper functions and constants used across the library.
+            </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>
+                <em>Happy Spatializing!</em>
+            </p>
+        </div>
+    </div>
+</body>
+</html>
