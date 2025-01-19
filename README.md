@@ -1,3 +1,15 @@
+## Installation with poetry
+
+1. Create environment with Python 3.10
+    - `conda create -n swf python=3.10 poetry -y`
+    - `conda activate swf`
+1. Clone the repository and cd into it
+    - `git clone git@github.com:SamuelNarvaez/SWF.git`
+    - `cd SWF`
+
+2. Install
+    - `poetry install`
+
 # Spherical Wavelet Format
 
 About this Repo:

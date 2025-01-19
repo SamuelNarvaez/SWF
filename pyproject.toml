@@ -1,0 +1,22 @@
+[project]
+name = "swf"
+version = "0.1.0"
+description = ""
+authors = [
+    {name = "Samuel Narvaez",email = "45320721+SamuelNarvaez@users.noreply.github.com"}
+]
+readme = "README.md"
+requires-python = ">=3.10"
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+matplotlib = "^3.5.2"
+numpy = "^1.22.4"
+plotly = "^5.8.2"
+python_osc = "^1.8.0"
+scipy = "^1.8.1"
+SoundFile = "^0.10.3.post1"

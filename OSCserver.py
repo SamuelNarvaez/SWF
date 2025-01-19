@@ -1,23 +1,13 @@
-import queue
-import time
-import random
 import fileinput
 import sys
 
-from trimesh import *
-from swf import *
-from optimal import *
-from utils import *
-from constants import *
-
 import numpy as np
-import soundfile as sf
-from scipy import spatial
-
-from pythonosc.osc_server import BlockingOSCUDPServer
 from pythonosc.dispatcher import Dispatcher
+from pythonosc.osc_server import BlockingOSCUDPServer
 from pythonosc.udp_client import SimpleUDPClient
 
+from swf import *
+from swf.constants import *
 
 if __name__ == '__main__':
 
