@@ -61,7 +61,8 @@
         .section p {
             white-space: pre-wrap; /* Allow long text to wrap properly */
         }
-        code, pre code {
+        code {
+            background-color: rgba(229, 160, 96, 0.2);
             padding: 0.2em 0.4em;
             border-radius: 4px;
         }
@@ -126,7 +127,7 @@ A particular Spherical Wavelet Format is defined by:
             <p>
 First define a base triangular mesh that closely resembles your intended speaker layout for reproduction. This can be done by passing the coordinates of the vertices in R3 as a numpy array and the faces as a numpy array of indices of vertices in the vertex array to the <code>Trimesh</code> constructor. Consider this example, with an octahedron as the base:
             </p>
-            <pre><code>from trimesh import * 
+            <pre>from trimesh import * 
 import numpy as np
 
 vertices_octahedron = np.array([[1,0,0],
@@ -146,15 +147,15 @@ faces_octahedron = np.array([[1,2,4],
                              [2,1,5]])
 
 base = Trimesh(vertices_octahedron, faces_octahedron)
-</code></pre>
+</pre>
 
             <p>
 Next, decide how many levels of subdivision (resulting in a higher spatial-resolution mesh) you would like to carry out –– 3 is a good place to start. You can subdivide by hand, by calling the <code>subdivide()</code> method of the <code>Trimesh</code> object, which returns a new, subdivided <code>Trimesh</code> Object:
             </p>
-            <pre><code>subdivided_once = base.subdivide()         # Trimesh object
+            <pre>subdivided_once = base.subdivide()         # Trimesh object
 subdivided_twice = subdivided_once.subdivide() 
 subdivided_threetimes = subdivided_twice.subdivide()
-</code></pre>
+</pre>
 
             <p>
 This interface can be useful if you're interested in the details/having more control. Each call to subdivide is also generating the filters <code>P</code>, <code>Q</code>, <code>A</code>, <code>B</code> as described in the original paper via the lifting scheme. 
@@ -163,10 +164,10 @@ This interface can be useful if you're interested in the details/having more con
             <p>
 However, it is most likely you will want to use a higher-level interface to automate this process. The <code>SWF</code> class found in <code>swf.py</code> abstracts the subdivision process and allows the specification of the number of subdivisions as an argument:
             </p>
-            <pre><code>from swf import *
+            <pre>from swf import *
 
 swf_3_subdivisions = SWF(Trimesh(vertices_octahedron, faces_octahedron), n=3)  # SWF object
-</code></pre>
+</pre>
 
             <p>
 The <code>SWF</code> object holds the entire sequence of subdivision meshes, as well as the sequence of <code>P, Q, A, B</code> filters to transition data between them. For convenience, the wavelets, dual wavelets, scaling functions, and dual scaling functions have been precomputed for each level and are stored in a list as an attribute. 
@@ -175,26 +176,26 @@ The <code>SWF</code> object holds the entire sequence of subdivision meshes, as 
             <p>
 Similarly, if you want your SWF format to be optimized for some psychoacoustical properties, you can use the <code>OptimalSWF</code> class found in <code>optimal.py</code> to automatically subdivide and generate optimized filters along the way:
             </p>
-            <pre><code>from optimal import *
+            <pre>from optimal import *
 
 optimized_3_subdivisions = OptimalSWF(vertices_octahedron,
                                       faces_octahedron,
                                       n=3).model  # SWF object
-</code></pre>
+</pre>
 
             <p>
 The most common operations needed for a given <code>SWF</code> are encoding and interpolating. If we have a virtual source, and we want to encode it in SWF at location <code>x, y, z</code>:
             </p>
-            <pre><code>loc = np.array([x, y, z])
+            <pre>loc = np.array([x, y, z])
 interpolation = swf.interpolate(loc)
-</code></pre>
+</pre>
 
             <p>
 The <code>interpolate</code> method performs VBAP-style interpolation at the finest level of spatial resolution, and returns a vector defined over the finest level of mesh which can be multiplied against the signal of our virtual source to place it in space. To encode to our coarsest level of mesh:
             </p>
-            <pre><code>fine = signal * interpolation
+            <pre>fine = signal * interpolation
 coarse = swf.encode(fine)
-</code></pre>
+</pre>
 
             <p>
 If our coarsest level of mesh is the same as our speaker array, we can send the resulting channels directly to the speakers. If we have encoded to some higher truncation level, or our mesh is not identical to the speaker array, some additional decoding step must be implemented and calculated at this point.
@@ -208,14 +209,14 @@ If our coarsest level of mesh is the same as our speaker array, we can send the 
 In <code>trimesh.py</code>, you'll find a data structure for a triangular mesh, based heavily on Mike Dawson-Haggerty's 
 <a href="https://trimsh.org/" target="_blank">trimesh</a>:
             </p>
-            <pre><code>@software{trimesh,
+            <pre>@software{trimesh,
     author = {{Dawson-Haggerty et al.}},
     title = {trimesh},
     url = {https://trimsh.org/},
     version = {3.2.0},
     date = {2019-12-8},
 }
-</code></pre>
+</pre>
 
             <p>
 The important method of the <code>Trimesh</code> object is subdivision. After specifying a base mesh, we can subdivide it automatically using the loop subdivision scheme, or the user can manually specify the next subdivision mesh. Subdivision allows us to approximate the sphere (or hemisphere) with greater resolution – resulting in higher spatial resolution. Upon subdivision, a <code>Trimesh</code> builds the Decoding and Encoding filters <code>P, Q</code> and <code>A, B</code> which allow us to represent data defined over the mesh at different resolutions. 
