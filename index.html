@@ -86,19 +86,19 @@
 
         <div class="section">
             <p>
-<b>About this <a href="https://github.com/SamuelNarvaez/SWF" target="_blank">Repo</a>:</b><br/>
+<b><a href="https://github.com/SamuelNarvaez/SWF" target="_blank">Repo</a></b><br/>
 Thesis Report: 
 <a href="https://zenodo.org/record/7116375#.YzMMSiXtbDs" target="_blank">https://zenodo.org/record/7116375#.YzMMSiXtbDs</a>
             </p>
             <p>
-This is a working repository for ongoing research on Spherical Wavelet Format (SWF), a spatial audio format invented by my advisors <b>Davide Scaini</b> and <b>Daniel Arteaga</b>, as described in:
+As a part of my Masters' I participated in ongoing research on Spherical Wavelet Format (SWF), a spatial audio format invented by my advisors <b>Davide Scaini</b> and <b>Daniel Arteaga</b>, and described in:
 
 <blockquote>
 D. Scaini and D. Arteaga, “Wavelet-Based Spatial Audio Format” J. Audio Eng. Soc., vol. 68, no. 9, pp. 613–627, (2020 September.). 
 DOI: <a href="https://doi.org/10.17743/jaes.2020.0049" target="_blank">https://doi.org/10.17743/jaes.2020.0049</a>
 </blockquote>
 
-I am actively developing this project with the hopes of publishing a robust python library for playing around with SWF. In the <code>dev</code> branch, you will find a folder called <code>testing</code> which has a lot of good example notebooks. 
+I am actively developing this project with the hopes of providing a robust python library for playing around with SWF. In the <code>dev</code> branch, you will find a folder called <code>testing</code> which has a lot of good example notebooks. 
 
 At the moment, everything works, but lacks good exception handling and I urge any user to navigate with caution. Feel free to reach out to me with any questions!
 
@@ -108,7 +108,7 @@ If you're a Max 8 user, the included max patch is a great place to start explori
 
         <div class="section">
             <p>
-In SWF, we decompose the soundfield by a set of basis functions called <em>spherical wavelets</em>. This is all handled by the library, and it is not necessary to understand the mathematical details in order to generate and use a SWF format. I would, however, recommend you read the above reference if you're interested in learning more.
+In SWF, we decompose the soundfield by a set of basis functions called <em>spherical wavelets</em>. This is all handled by the library, and it is not necessary to understand the mathematical details in order to generate and use a SWF format. I would, however, recommend you read the above reference if you're interested in learning more. SWF is a technique that generates a family of formats that can be optimized for different purposes.
             </p>
 
             <p>
@@ -127,7 +127,7 @@ A particular Spherical Wavelet Format is defined by:
             <p>
 First define a base triangular mesh that closely resembles your intended speaker layout for reproduction. This can be done by passing the coordinates of the vertices in R3 as a numpy array and the faces as a numpy array of indices of vertices in the vertex array to the <code>Trimesh</code> constructor. Consider this example, with an octahedron as the base:
             </p>
-            <pre>from trimesh import * 
+            <pre>from trimesh import Trimesh 
 import numpy as np
 
 vertices_octahedron = np.array([[1,0,0],
@@ -164,7 +164,7 @@ This interface can be useful if you're interested in the details/having more con
             <p>
 However, it is most likely you will want to use a higher-level interface to automate this process. The <code>SWF</code> class found in <code>swf.py</code> abstracts the subdivision process and allows the specification of the number of subdivisions as an argument:
             </p>
-            <pre>from swf import *
+            <pre>from swf import SWF
 
 swf_3_subdivisions = SWF(Trimesh(vertices_octahedron, faces_octahedron), n=3)  # SWF object
 </pre>
@@ -176,7 +176,7 @@ The <code>SWF</code> object holds the entire sequence of subdivision meshes, as 
             <p>
 Similarly, if you want your SWF format to be optimized for some psychoacoustical properties, you can use the <code>OptimalSWF</code> class found in <code>optimal.py</code> to automatically subdivide and generate optimized filters along the way:
             </p>
-            <pre>from optimal import *
+            <pre>from optimal import OptimalSWF
 
 optimized_3_subdivisions = OptimalSWF(vertices_octahedron,
                                       faces_octahedron,
