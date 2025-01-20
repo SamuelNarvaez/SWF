@@ -40,10 +40,10 @@ To use this library, first define a base triangular mesh that closely resembles 
 from trimesh import * 
 import numpy as np
 
-vertices_octahedron = np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]])
-faces_octahedron = np.array([[1,2,4],[1,3,4],[3,0,4],[0,2,4],[1,3,5],[3,0,5],[0,2,5],[2,1,5]])
+vertices_octahedron = np.array([[1,0,0],[-1,0,0],[0,1,0],[0,-1,0],[0,0,1],[0,0,-1]]) # Cartesian coordinates
+faces_octahedron = np.array([[1,2,4],[1,3,4],[3,0,4],[0,2,4],[1,3,5],[3,0,5],[0,2,5],[2,1,5]]) # Vertex indices
 
-base = Trimesh(vertices704,faces704)
+base = Trimesh(vertices_octahedron,faces_octahedron)
 ```
 
 Next, decide how many levels of subdivision (resulting in a higher spatial-resolution mesh) you would like to carry out –– 3 is a good place to start. You can subdivide by hand, by calling the subdivide method of the Trimesh object, which returns a new, subdivided Trimesh Object:
